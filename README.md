@@ -1,3 +1,3 @@
-# SCWA
+
 Smart City Water Analitycs
-# Este proyecto comienza con la recopilación de datos
+# The study consisted of two stages, in the first one the datasets were split by months and analyzed separately to evaluate the features presented in each one. To evaluate the representative behavior for city, the two dataset will be analyzed to find the water foot print  who share the same pattern in behavior. In the second stage different regression models were applied to the data to find the relation between the demand patterns and the meter account variables. This projects shall be considerer as mixed of real data from Madrid statictis and andom projections of neighborhood groups, in order to save the public mottion of this task.
