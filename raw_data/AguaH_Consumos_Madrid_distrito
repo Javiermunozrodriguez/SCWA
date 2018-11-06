@@ -1,1 +1,9 @@
+# el proyecto se ha desarrollado en R
 
+# la base del análisis parte de un data set AguaH rescatado de la comunidad kaggle
+
+"https://www.kaggle.com/jaeyoonpark/data-imputation-aguah-water-consumption/data"
+
+# en algunos notebooks desarrollados hasta la fecha en torno a este data set, se centran sobre todo en la aproximación en la sustitución de los
+#NA/null data en base a criterios como interpolaciones o k- vecinos. Anque es un ejercicio interesante y podemos trasformar ese código
+# como un ejerciio auxiliar al tfm pero no como el grueso del proceso de limpieza, que optaremos por estrategias directas.
