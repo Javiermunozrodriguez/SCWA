@@ -5,7 +5,7 @@
 
 **Abstract
 
-The study consisted of two stages, in the first one the datasets were split by months and analyzed separately to evaluate the features presented in each one. To evaluate the representative behavior for city, the dataset will be analyzed to find the water foot print who share the same pattern in behavior. In the second stage different regression models were applied to the data to find the relation between the demand patterns and the meter account variables. This projects shall be considerer as mixed of real data from official Madrid statictis and random consumption in middle city by neighborhood groups, in order to save the public mottion of this task.
+The study consisted of two stages, in the first one the datasets were split by months and analyzed separately to evaluate the features presented in each one. To evaluate the representative behavior for city, the dataset will be analyzed to find the water foot print who share the same pattern in behavior. In the second stage, different regression models were applied to the data to find the relation between the demand patterns and the meter account variables. This projects shall be considerer as mixed of real data from official Madrid statictis and random consumption in middle city by neighborhood groups, in order to save the public mottion of this task.
 
 **Introducción
 
@@ -32,7 +32,7 @@ En la fase de análisis se ha empleado diferentes modelos generalizados de regre
 
 **Resumen del resultado
 
-Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la prediccion se ha calculado entorno a 80 %. Hay derivadas interesasnte que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restriccion en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiles, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
+Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado entorno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restriccion en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiles, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
 
 **Manual de usuario
 
