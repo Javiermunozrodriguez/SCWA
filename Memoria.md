@@ -21,9 +21,15 @@ La base del análisis parte del data set AguaH.csv rescatado de la comuidad kagg
 
 En algunos notebooks desarrollados hasta la fecha en torno a este data set, se centran sobre todo en la aproximación en la sustitución de los NA/null data en base a criterios como interpolaciones o k- vecinos. Aunque es un ejercicio interesante, podemos trasformar ese código como un ejercicio auxiliar al tfm, pero no como el grueso del proceso de limpieza, que se opta por estrategias más directas. Los datos en bruto presentan varios problemas en la clase de los registros de consumo (son factores), en las variables que no aportan información o es sesgada, y en la candidad de datos perdidos, sobre todo en los primeros años de registro 2009-2011, como se puede ver el link de kaggle. La limpieza se explica paso a paso en el script de esta fase. El lenguaje elegido ha sido R por la potencial naturaleza estadística del problema.
 
+Los datos de perfil de consumos totalizados de distritos se ha obtenido de la base de datos pública del Ayuntamiento de Madrid
+
+"http://www-2.munimadrid.es/CSE6/control/seleccionDatos?numSerie=14030200040"
+
+El objetivo de proyecto es crear un perfil virtual plausible de consumo en base a la huella de una ciudad media, escalada a Madrid. El espíritu del trabajo es seguir desarrollando y mejorando el modelo con datos reales de fuentes privadas. Esto implica que el grueso del trabajo aquí desarrollado se puede iterar con las data base adecuadas, que para el caso de evaluación de proyecto que nos ocupa, y debido a la idea de mantener públicos y consultables los resultados aquí obtenidos, será abordado en una fase beta. 
+
 **Metodología
 
-Las series de datos disponibles en las bases de los organismos oficiales de Madrid aportan información hasta el 2016. En base a esto se ha escalado el patrón de consumo de los totalizados de distritos de Madrid y adecuado a la serie temporal de datos para el periodo
+Las series de datos disponibles en las bases de los organismos oficiales de Madrid aportan información hasta el 2016.En base a esto se ha escalado el patrón de consumo de los totalizados de distritos de Madrid y adecuado a la serie temporal de datos para el periodo
 de 2009-2015. En resumen se han trabajado 85 variables independientes con observaciones entorno a los 178.598 puntos de consumo.
 
 Durante el tratamiento de datos se ha filtrado la información para conseguir el tipo de series (diccionarios) que necesita el modelo de la fase de análisis, y asignado valores a datos NA/null en base a los detalles redactados en el código.
