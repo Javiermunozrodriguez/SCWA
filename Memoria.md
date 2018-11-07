@@ -15,13 +15,13 @@ El estudio constó de dos etapas, en la primera, los conjuntos de datos se divid
 
 **Descripción de los datos de entrada
 
-La base del análisis parte del data set AguaH.csv rescatado de la comuidad kaggle,  alojado en:
+La base del análisis parte del dataset AguaH.csv rescatado de la comunidad kaggle,  alojado en:
 
 "https://www.kaggle.com/jaeyoonpark/data-imputation-aguah-water-consumption/data"
 
-En algunos notebooks desarrollados hasta la fecha en torno a este data set, se centran sobre todo en la aproximación en la sustitución de los NA/null data en base a criterios como interpolaciones o k- vecinos. Aunque es un ejercicio interesante, podemos trasformar ese código como un ejercicio auxiliar al tfm, pero no como el grueso del proceso de limpieza, que se opta por estrategias más directas. Los datos en bruto presentan varios problemas en la clase de los registros de consumo (son factores), en las variables que no aportan información o es sesgada, y en la candidad de datos perdidos, sobre todo en los primeros años de registro 2009-2011, como se puede ver el link de kaggle. La limpieza se explica paso a paso en el script de esta fase. El lenguaje elegido ha sido R por la potencial naturaleza estadística del problema.
+En algunos notebooks desarrollados hasta la fecha en torno a este data set, se centran sobre todo en la aproximación en la sustitución de los NA/null data en base a criterios como interpolaciones o k- vecinos. Aunque es un ejercicio interesante, podemos trasformar ese código como un ejercicio auxiliar al tfm, pero no como el grueso del proceso de limpieza, que se opta por estrategias más directas. Los datos en bruto presentan varios problemas en la clase de los registros de consumo (son factores), en las variables que no aportan información o es sesgada, y en la cantidad de datos perdidos, sobre todo en los primeros años de registro 2009-2011, como se puede ver el link de kaggle. La limpieza se explica paso a paso en el script de esta fase. El lenguaje elegido ha sido R por la potencial naturaleza estadística del problema.
 
-Los datos de perfil de consumos totalizados de distritos se ha obtenido de la base de datos pública del Ayuntamiento de Madrid
+Los datos de perfil de consumos totalizados de distritos se han obtenido de la base de datos pública del Ayuntamiento de Madrid
 
 "http://www-2.munimadrid.es/CSE6/control/seleccionDatos?numSerie=14030200040"
 
@@ -34,11 +34,11 @@ de 2009-2015. En resumen se han trabajado 85 variables independientes con observ
 
 Durante el tratamiento de datos se ha filtrado la información para conseguir el tipo de series (diccionarios) que necesita el modelo de la fase de análisis, y asignado valores a datos NA/null en base a los detalles redactados en el código.
 
-En la fase de análisis se ha empleado diferentes modelos generalizados de regresión logística, tratando los datos como series temporales, adecuadas para el tratamiento de la información con el paquete ARIMA, autogenerador de modelos de regresión más adecuado para una estimación de la serie. Esta opción de modelización pasa por tratar de explicar el comportamiento de una variable,no solo función de los valores que tomó en el pasado (modelos AR) sino a través de los errores al estimar el valor de la variable en los períodos anteriores. Ello da lugar a los modelos de medias móviles (Modelos MA) ,que están integrados dentro de ARIMA y que son los adecuados para series temporales con periocidad, asumiendo el diagnostico de varios modelos combinados (lm, gml, etc.). Los detalles y tratamiento de la información se encentran en el código del apartado de Regression model_water analitics.
+En la fase de análisis se ha empleado diferentes modelos generalizados de regresión logística, tratando los datos como series temporales, adecuadas para el tratamiento de la información con el paquete ARIMA, autogenerador de modelos de regresión más adecuado para una estimación de la serie. Esta opción de modelización pasa por tratar de explicar el comportamiento de una variable, no solo función de los valores que tomó en el pasado (modelos AR) sino a través de los errores al estimar el valor de la variable en los períodos anteriores. Ello da lugar a los modelos de medias móviles (Modelos MA), que están integrados dentro de ARIMA y que son los adecuados para series temporales con periodicidad, asumiendo el diagnostico de varios modelos combinados (lm, gml, etc.). Los detalles y tratamiento de la información se encentran en el código del apartado de Regression model_water analitics.
 
 **Resumen del resultado
 
-Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado entorno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restriccion en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiles, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
+Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
 
 **Manual de usuario
 
