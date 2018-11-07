@@ -276,6 +276,10 @@ final_pred_s01 <- c(as.numeric(forecast_cons1$mean))
 
 class(final_pred_s01)
 
+#Los gráficos Q-Q son una herramienta eficaz para evaluar la normalidad. Aquí las aplicamos a los residuos.
+# Los puntos parecen seguir la línea recta bastante de cerca, aunque parece desviarse en el extremo superior. 
+
+qqnorm(ajuste_s1$residuals, sub="Gráfico Q para evaluar normalidad");qqline(ajuste_s1$residuals)
 
 # vamos a aplicar el modelo predictivo ARIMA para todas las series de consumidores, y generar las varibles dependientes
 #de lo que será la matriz de predicciones, 
@@ -749,6 +753,7 @@ consumption_prediction_2016<-cbind(consumer_vector,consumption_prediction_2016)
 consumption_prediction_2016 <- consumption_prediction_2016%>%mutate_at(.vars = vars(`2016/01`:`2016/12`),.funs = funs(abs(. )))
 
 write.csv(consumption_prediction_2016, file = "consumption_prediction_2016.csv")
+
 
 
 # vamos a hacer algunas comparaciones con datos reales, veamos la suma de consumo para 2016 en los datos del Ayto. De Madrid
