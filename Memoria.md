@@ -23,7 +23,7 @@ En algunos notebooks desarrollados hasta la fecha en torno a este data set, se c
 
 **Metodología
 
-Las serires de datos disponibles en las bases de los organismos oficiales de Madrid aportan información hasta el 2016. En base a esto se ha escalado el patrón de consumo de los totalizados de distritos de Madrid y adecuando a la serie temporal de datos para el periodo
+Las series de datos disponibles en las bases de los organismos oficiales de Madrid aportan información hasta el 2016. En base a esto se ha escalado el patrón de consumo de los totalizados de distritos de Madrid y adecuado a la serie temporal de datos para el periodo
 de 2009-2015. En resumen se han trabajado 85 variables independientes con observaciones entorno a los 178.598 puntos de consumo.
 
 Durante el tratamiento de datos se ha filtrado la información para conseguir el tipo de series (diccionarios) que necesita el modelo de la fase de análisis, y asignado valores a datos NA/null en base a los detalles redactados en el código.
@@ -32,7 +32,7 @@ En la fase de análisis se ha empleado diferentes modelos generalizados de regre
 
 **Resumen del resultado
 
-Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la prediccion se ha calculado entorno a 80 %. Hay derivadas interesasnte que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restriccion en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiles, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, con los registros oficiales y privados de la gestora del agua en Madrid.
+Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la prediccion se ha calculado entorno a 80 %. Hay derivadas interesasnte que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restriccion en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiles, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
 
 **Manual de usuario
 
