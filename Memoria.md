@@ -19,6 +19,8 @@ La base del análisis parte del dataset AguaH.csv rescatado de la comunidad kagg
 
 "https://www.kaggle.com/jaeyoonpark/data-imputation-aguah-water-consumption/data"
 
+"https://drive.google.com/drive/folders/1-E6soGSTTa3-JlBlg846A00bOJeq0OvB?usp=sharing"
+
 En algunos notebooks desarrollados hasta la fecha en torno a este data set, se centran sobre todo en la aproximación en la sustitución de los NA/null data en base a criterios como interpolaciones o k- vecinos. Aunque es un ejercicio interesante, podemos trasformar ese código como un ejercicio auxiliar al tfm, pero no como el grueso del proceso de limpieza, que se aborda por estrategias más directas. Los datos en bruto presentan varios problemas en la clase de los registros de consumo (son factores), en las variables que no aportan información o es sesgada, y en la cantidad de datos perdidos, sobre todo en los primeros años de registro 2009-2011, como se puede ver el link de kaggle. La limpieza se explica paso a paso en el script de esta fase. El lenguaje elegido ha sido R por la potencial naturaleza estadística del problema.
 
 Los datos de perfil de consumos totalizados de distritos se han obtenido de la base de datos pública del Ayuntamiento de Madrid
