@@ -13,6 +13,8 @@ A partir del conocimiento en las técnicas de Data Science existentes, se elegir
 
 El estudio constó de dos etapas, en la primera, los conjuntos de datos se dividieron por temporada y se analizan por separado para evaluar las características presentadas en cada uno. Para evaluar la comportamiento representativo y virtual de la Ciudad de Madrid, se analizaron las etiquetas de agrupamiento para encontrar los grupos que tengan el mismo patrón. En la segunda etapa se aplicaron modelos a los datos para encontrar la relación entre los patrones de demanda y las variables de la cuenta del consumidor.
 
+Los enlaces incluidos en esta memoria obedecen a las restricciones de GitHub para subir archivos > 25 Mb.
+
 **Descripción de los datos de entrada
 
 La base del análisis parte del dataset AguaH.csv rescatado de la comunidad kaggle,  alojado en:
@@ -41,6 +43,10 @@ En la fase de análisis se ha empleado diferentes modelos generalizados de regre
 **Resumen del resultado
 
 Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
+
+Los enlaces a los dataset resultado, se pueden encontrar en el siguiente link:
+
+"https://drive.google.com/file/d/143hweH_0-ph_ukCzxBilPYQYLVjyUQ43/view?usp=sharing"
 
 **Manual de usuario
 
