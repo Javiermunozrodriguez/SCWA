@@ -295,7 +295,7 @@ for(i in 5001:10000){
 
 pred_matrix_2016_01 <- as.data.frame(pred_matrix_2016)
 
-colnames(pred_matrix_2016_01)<-c("2016/01","2016/02","2016/03","2016/04","2016/05","2016/06","20116/07", "2016/08","2016/09","2016/10","2016/11","2016/12")
+colnames(pred_matrix_2016_01)<-c("2016/01","2016/02","2016/03","2016/04","2016/05","2016/06","2016/07", "2016/08","2016/09","2016/10","2016/11","2016/12")
 
 pred_matrix_2016_01 <- pred_matrix_2016_01%>%mutate_at(.vars = vars(`2016/01`:`2016/12`),.funs = funs(round(.,digits=2)))
 
@@ -757,7 +757,7 @@ Total_2016<-colSums (select (consumption_prediction_2016, contains ("2016")))
 
 sum(Total_2016,1:12)
 
-#Vemos que el consumo total se cifra en 119.575.111 m3/año sin tener en cuenta las perdidas en al red, que podemos estimar entre
+#Vemos que el consumo total se cifra en 131.172.767 m3/año sin tener en cuenta las perdidas en al red, que podemos estimar entre
 
 #un 15 -20 %, el coste por metro cubico medio en el año 2016 fue de 1,82 ???/m3
 
@@ -780,7 +780,7 @@ accurancy_pred_vs_real
 # que aportaria un incremento en el consumo de agua sin qu este fuera detectado por las predicciones, siendo un un spin off del TFM que nos ocupa.
 
 
-# un 80,55 % del consumo real a la baja. Pongamos como hipotesis las pérdidas medias registradas en la red ese año (15,06 %)
+# un 88.36 % del consumo real a la baja. Pongamos como hipotesis las pérdidas medias registradas en la red ese año (15,06 %)
 
 # y devido a la desviación con el consumo real, demos además un margen del 20 % para reserva, el consumo final previsto según
 
@@ -793,7 +793,7 @@ pred_mayorada
 
 #
 
-# esto supone un total de consumo mayorado de 165.103.889 m3 para la ciudad de Madrid. Teniendo en cuenta la disposición desde embalses y captaciones
+# esto supone un total de consumo mayorado de 181.112.863 m3 para la ciudad de Madrid. Teniendo en cuenta la disposición desde embalses y captaciones
 # para ese año 
 
 "http://www-2.munimadrid.es/CSE6/control/mostrarDatos"
@@ -808,19 +808,23 @@ porcent_diff_captation_vs_consuption <- 491000000- 2.5*pred_mayorada
 
 porcent_diff_captation_vs_consuption
 
-# esto supone más de 160 Hm3 que se están captando, potabilizando, bombeando y almacenando en la red y depósitos que hay que mantener
+# esto supone   38.21 Hm3 que se están captando, potabilizando, bombeando y almacenando en la red y depósitos que hay que mantener
 
-# teneindo el cuanta precio medio del m3, esto supone:
+# teniendo el cuenta precio medio del m3, esto supone:
+
+"https://www.canaldeisabelsegunda.es/es/galeria_ficheros/Home/TARIFAS2018_web.pdf"
+
+# podemos asimilar un cosnte medio de aducción y distribición de 1,1712 ???/m3
 
 
-prev_ahorro_red_distribución_2016 <- porcent_diff_captation_vs_consuption*1.82
+prev_ahorro_red_distribución_2016 <- porcent_diff_captation_vs_consuption*1.1742
 
 prev_ahorro_red_distribución_2016
 
 
-# estamos hablando de 142 Millones de euros!!!, que la empresa de gestion del agua puede ahorrar y emplear en un pequeña parte de ese ahorro
+# estamos hablando de casi 45 Millones de euros!!!, que la empresa de gestion del agua puede ahorrar y emplear en un pequeña parte de ese ahorro
 
-# en fortalecer su departamento de analisis inteligente de las redes de distribución para la ciudad de MAdrid y datascience
+# en fortalecer su departamento de analisis inteligente de las redes de distribución para la ciudad de Madrid y datascience
 
 
 # en el año 2017 el CYII realizó una serie de mejoras en la red que bajaraonsustancialmente las pérdidas según su s publicaciones hasta dicras de 
@@ -829,7 +833,7 @@ prev_ahorro_red_distribución_2016
 
 
 
-# la conclusión es que este TFM se abre como un aprimera aproximación al problema de gestión de agua en las ciudades. aplicar ciencia de datos junto 
+# la conclusión es que este TFM se abre como un primera aproximación al problema de gestión de agua en las ciudades. aplicar ciencia de datos junto 
 
 # junto con el potencial que arroja las inicia tevas como el proyecto iWESLA
 
