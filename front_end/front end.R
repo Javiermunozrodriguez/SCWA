@@ -127,6 +127,10 @@ consumption_prediction_2016$Distrito[1:7113]= "Centro"
 
 consumption_prediction_2016 <- cbind(Distrito,consumption_prediction_2016)
 
+--------------------------------
+# esta parte del código se puede mejorar, haciendo más elegante el loop que recorrael datafraem y asignar el distrito. trabajjaremso en en una segunda fase
+# en este punto
+
 total=0
 
 for (i in 1:178598) {
@@ -146,6 +150,12 @@ library(dplyr)
 Total_2016<-colSums (select (consumption_prediction_2016, contains ("2016")))
 
 sum(Total_2016)
+
+-----------------------------------------------
+
+  
+#Asignación de distritos a los datos
+
 
 #vemos cuales son los consumos aplicados al matriz de prediccion consumption_prediction_2016 por cada distrito, empezamos por el centro
 
@@ -1421,5 +1431,13 @@ leaflet(data = map_call_madrid) %>% addTiles() %>% addProviderTiles(providers$Op
 # creamos un leaflet con lso datos de matriz de consumos
 
 
-leaflet(data = quakes[1:20,]) %>% addTiles() %>%
-  addMarkers(~long, ~lat, popup = ~as.character(mag), label = ~as.character(mag))
+mark_data <- data.frame(long= consumption_pred_data_madrid_2016_by_coor$lon[1:2000], lat= consumption_pred_data_madrid_2016_by_coor$lat[1:2000], val=consumption_pred_data_madrid_2016_by_coor$`2016/01`[1:2000])
+
+str(mark_data)
+
+
+leaflet(data = mark_data) %>% addTiles() %>% addMarkers(~long, ~lat, popup = ~as.character(val), label = ~as.character(val, clusterOptions = markerClusterOptions()))
+
+leaflet(data = mark_data) %>% addTiles() %>% addMarkers(clusterOptions = markerClusterOptions())
+
+
