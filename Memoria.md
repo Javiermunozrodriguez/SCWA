@@ -50,7 +50,7 @@ Los enlaces a los dataset resultado, se pueden encontrar en el siguiente link:
 
 **Manual de usuario
 
-Se ha empleado shiny como paquete de R para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para algoritmos o acceder y manipular tablas de datos a través de controles de HMTL: sliders, botones, etc. el usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo.
+Se ha empleado leaflet como dashboard paquete de R para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para algoritmos o acceder y manipular tablas de datos a través de controles de HMTL: sliders, botones, etc. el usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo.
 
 
 
