@@ -57,10 +57,3 @@ la cartografia utilizada se puede encontrar en
 "https://drive.google.com/file/d/1urk-YsMp_0-Q5tIHbrRHpwnObc4ktd8L/view?usp=sharing"
 
 
-
-
-
-
-
-
-
