@@ -1431,13 +1431,12 @@ leaflet(data = map_call_madrid) %>% addTiles() %>% addProviderTiles(providers$Op
 # creamos un leaflet con lso datos de matriz de consumos
 
 
-mark_data <- data.frame(long= consumption_pred_data_madrid_2016_by_coor$lon[1:2000], lat= consumption_pred_data_madrid_2016_by_coor$lat[1:2000], val=consumption_pred_data_madrid_2016_by_coor$`2016/01`[1:2000])
+mark_data <- data.frame(long= consumption_pred_data_madrid_2016_by_coor$lon, lat= consumption_pred_data_madrid_2016_by_coor$lat, val=consumption_pred_data_madrid_2016_by_coor$`2016/01`)
 
 str(mark_data)
 
 
-leaflet(data = mark_data) %>% addTiles() %>% addMarkers(~long, ~lat, popup = ~as.character(val), label = ~as.character(val, clusterOptions = markerClusterOptions()))
 
-leaflet(data = mark_data) %>% addTiles() %>% addMarkers(clusterOptions = markerClusterOptions())
+leaflet(data = mark_data) %>% addTiles() %>% addMarkers(clusterOptions = markerClusterOptions(~long, ~lat, popup = ~as.character(val)), label = ~as.character(paste(val,"m³",sep=" "), color="blue"))
 
 
