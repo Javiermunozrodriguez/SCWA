@@ -25,7 +25,7 @@ if(!require("ROCR")){
   library("ROCR")
 }
 
-library(ggplot2)
+library(ggplot2) 
 
 library(tidyverse)
 
@@ -1330,8 +1330,17 @@ consumption_prediction_2016$lon[172190:178598] <- lon.sample
 write.csv(consumption_prediction_2016,file="consumption_pred_data_madrid_2016_by_coor.csv")
   
   
-# cargamos ahora el paquete de ggmap para visualizar que tal queda
+# cargamos ahora el paquete de ggmap para visualizar que tal queda, teneindo en cuenta al distribución
 
+p<- ggplot(consumption_pred_data_madrid_2016_by_coor, aes(consumption_pred_data_madrid_2016_by_coor$Tipo_consumidor,consumption_pred_data_madrid_2016_by_coor$`2016/01`)) 
+
+p2 <- ggplot(consumption_pred_data_madrid_2016_by_coor, aes(consumption_pred_data_madrid_2016_by_coor$Distrito,consumption_pred_data_madrid_2016_by_coor$`2016/01`)) 
+
+# podemos ver al distribución por distritos
+
+p + geom_boxplot(outlier.colour=NA, ylab = " Consumo en m3", xlab = "tipo de consumidor") +  coord_cartesian(ylim = c(0, 100))
+
+p2 + geom_boxplot(outlier.colour=NA,  ylab = " Consumo en m3",  xlab = "tipo de consumidor") +  coord_cartesian(ylim = c(0, 40))
   
 install.packages("ggmap")
 
@@ -1435,9 +1444,14 @@ mark_data <- data.frame(long= consumption_pred_data_madrid_2016_by_coor$lon, lat
 
 str(mark_data)
 
-
+#finalmente podemos ver los consumidores
 
 leaflet(data = mark_data) %>% addTiles() %>% addMarkers(clusterOptions = markerClusterOptions(~long, ~lat, popup = ~as.character(val)), label = ~as.character(paste(val,"m³",sep=" "), color="blue"))
+
+
+
+
+
 
 
 
