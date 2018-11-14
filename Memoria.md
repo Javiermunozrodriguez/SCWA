@@ -21,8 +21,6 @@ La base del análisis parte del dataset AguaH.csv rescatado de la comunidad kagg
 
 "https://www.kaggle.com/jaeyoonpark/data-imputation-aguah-water-consumption/data"
 
-"https://drive.google.com/drive/folders/1-E6soGSTTa3-JlBlg846A00bOJeq0OvB?usp=sharing"
-
 En algunos notebooks desarrollados hasta la fecha en torno a este data set, se centran sobre todo en la aproximación en la sustitución de los NA/null data en base a criterios como interpolaciones o k- vecinos. Aunque es un ejercicio interesante, podemos trasformar ese código como un ejercicio auxiliar al tfm, pero no como el grueso del proceso de limpieza, que se aborda por estrategias más directas. Los datos en bruto presentan varios problemas en la clase de los registros de consumo (son factores), en las variables que no aportan información o es sesgada, y en la cantidad de datos perdidos, sobre todo en los primeros años de registro 2009-2011, como se puede ver el link de kaggle. La limpieza se explica paso a paso en el script de esta fase. El lenguaje elegido ha sido R por la potencial naturaleza estadística del problema.
 
 Los datos de perfil de consumos totalizados de distritos se han obtenido de la base de datos pública del Ayuntamiento de Madrid
@@ -42,18 +40,15 @@ En la fase de análisis se ha empleado diferentes modelos generalizados de regre
 
 **Resumen del resultado
 
-Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
-
-Los enlaces a los dataset resultado, se pueden encontrar en el siguiente link:
-
-"https://drive.google.com/file/d/143hweH_0-ph_ukCzxBilPYQYLVjyUQ43/view?usp=sharing"
+Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid. Los data set resultado están diponibles en esta cuenta github.
 
 **Manual de usuario
 
-Se ha empleado leaflet como dashboard paquete de R para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para algoritmos o acceder y manipular tablas de datos a través de controles de HMTL: sliders, botones, etc. el usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo.
+Se ha empleado leaflet como dashboard paquete de R para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para acceder y manipular tablas de datos de predicciones a través de controles de HMTL. El usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo.
 
-la cartografia utilizada se puede encontrar en 
+Se implementado también una shinyApp para analizar por distritos, tipo de consumidores y consumos anuales como datos de entrada las distribuciones de datos resultado de la aplicación de los modelos.
 
-"https://drive.google.com/file/d/1urk-YsMp_0-Q5tIHbrRHpwnObc4ktd8L/view?usp=sharing"
+Hay también un apartado dedicado a la generación de mapas estáticos, donde se ha empleado cartografía formato .shp de la Comunidad de Madrid.
+
 
 
