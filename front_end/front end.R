@@ -1,14 +1,15 @@
 # En este capitulo del trabajo , se desarrolla la programación necesaria para la visualización de los datos
+# enriqueciendo el resultado de las predicciones con varaibles georeferenciados
 
 library(readr)
 
-#por favor, el siguinete dataset, hay que cargarlso desde al carpeta que esté alojado en su servidor
+#por favor, el siguiente dataset, hay que cargarlos desde la carpeta que esté alojado en su servidor
 
 consumption_prediction_2016 <- read_csv("C:/Users/jmuro/Desktop/tfm/step_04_forecastmodels/consumption_prediction_2016.csv")
 
 View(consumption_prediction_2016)
 
-#cargamos las librerias que necesitamos apara comenzar a plantear un modelo
+#cargamos las librerias que necesitamos para comenzar a plantear un modelo resultado
 
 if(!require("plyr")){
   install.packages("plyr")
@@ -25,31 +26,32 @@ if(!require("ROCR")){
   library("ROCR")
 }
 
-library(ggplot2)
+library(ggplot2) 
 
 library(tidyverse)
 
-# primero vasmo a enriquecer la data set de resultados con las coordenadas de algunos puntos de distrifución de funetes de agua, 
-# escalando y distribuyendo en torno a un criterio de asignación según el distrito.
+# primero vams a enriquecer la data set de resultados con las coordenadas de algunos puntos de distrifución de lso distritos considerados, 
+# escalando y distribuyendo en torno a un criterio de asignación según el distrito. Son datos generados de manera aleatoria, sin
+# conprometer al natiraleza privada de los datos, se simula para unas coordenadas normalmente distribuidas
 
 Real_consumption_data_madrid_2016 <- read_excel("C:/Users/jmuro/Desktop/tfm/step_05_front end/Real_consumption_data_madrid_2016.xls")
 
 View(Real_consumption_data_madrid_2016)
 
-# limpiamos un poco los Datos para tener un perpectiva de lo que se intenta implementar
+# limpiamos un poco los Datos para tener un perspectiva de lo que se intenta implementar
 
 Real_consumption_data_madrid_2016 <- Real_consumption_data_madrid_2016[,-c(1)] # quitamos al primera comulna por defecto de carga
 
 Real_consumption_data_madrid_2016 <- Real_consumption_data_madrid_2016[-c(1,2,3,4,5,6,29,30),] # las filas que no aportan inforamción
 
 
-# Quitamos las filas de varibles colineales, litros por habitante e indices que no aportan información
+# Quitamos las filas de varibles colineales, litros por habitante e índices que no aportan información
 
 Real_consumption_data_madrid_2016 <- Real_consumption_data_madrid_2016[,-c(4,5)] 
 
 colnames(Real_consumption_data_madrid_2016)<-c("Distrito", " Consumo [m3]", "Poblacion", "Poblacion_relativa_%", "Consumo_relativo_%")
 
-# vamos a cambiar al clase para poder opeararla
+# vamos a cambiar la clase para poder opeararla
 
 Real_consumption_data_madrid_2016[, c(2:5)] <- sapply(Real_consumption_data_madrid_2016[, c(2:5)],as.character)
 
@@ -65,12 +67,12 @@ Real_consumption_data_madrid_2016$`Consumo_relativo_%` <- Real_consumption_data_
 
 Real_consumption_data_madrid_2016$`Población_relativa_%` <- Real_consumption_data_madrid_2016$`Población_relativa_%`*100
 
-# tambien eliminamos la fila de consumos sin registro de consumidores, porque, no vamos a poder absorber este patrón en el encaje
+# también eliminamos la fila de consumos sin registro de consumidores, porque, no vamos a poder absorber este patrón en el encaje
 # con las predicciones
 
 Real_consumption_data_madrid_2016 <- Real_consumption_data_madrid_2016[-c(22),]
 
-# vemaso la coherencia delas columnas de pesaso relativos
+# veamos la coherencia de las columnas de pesos relativos
 
 sum(Real_consumption_data_madrid_2016$`Población_relativa_%`)
 
@@ -78,16 +80,16 @@ sum(Real_consumption_data_madrid_2016$`Consumo_relativo_%`)
 
 write.csv(Real_consumption_data_madrid_2016,file="Real_consumption_data_madrid_2016.csv")
 
-# hay un pequeño sesgo en los consumos por quitarnos al parte de consumos sin registrar, pero avancemos con lso que si sabemos 
 
+# hay un pequeño sesgo en los consumos por quitarnos al parte de consumos sin registrar, pero avancemos con lso que si sabemos 
 # de al fotografía del 2016
 
 
-# la idea siguiente en crear un dataset que recoja los pesos de las poblacione por distritos y un regsitro aleatorio de direccione UTM
+# la idea siguiente en crear un dataset que recoja los pesos de las poblaciones por distritos y un regsitro aleatorio de direccione UTM
 # incluidas en las 178598 observaciones potenciales que podemos asiganar
 
-# en criterio de asignación v a aser por  peso relativo de los consumos, que es un huella más cnsistente con la filosofia de construcción de la
-# madtriz de predicciones 
+# en criterio de asignación va aser por  peso relativo de los consumos, que es un huella más consistente con la filosofia de construcción de la
+# madriz de predicciones 
 
 ggplot(Real_consumption_data_madrid_2016, aes(x = `Consumo_relativo_%`, y = `Población_relativa_%`)) + geom_point() +geom_smooth(model="lm")
 
@@ -326,7 +328,7 @@ sanblas_pred_consumption= sum(Total_2016,1:12)*(Real_consumption_data_madrid_201
 
 sum(consumption_prediction_2016[c(169490:172190),c(3:14)])
 
-consumption_prediction_2016$Distrito[169490:172190]= "San_Blas"
+consumption_prediction_2016$Distrito[169490:172189]= "San_Blas"
 
 # Barajas
 
@@ -334,7 +336,7 @@ barajas_pred_consumption= sum(Total_2016,1:12)*(Real_consumption_data_madrid_201
 
 sum(consumption_prediction_2016[c(172190:178598),c(3:14)])
 
-consumption_prediction_2016$Distrito[172190:178598]= "barajas"
+consumption_prediction_2016$Distrito[172190:178598]= "Barajas"
 
 #ponemos en minusculas la columna de consumidores
 
@@ -394,55 +396,45 @@ utmcoor_centro<-SpatialPoints(cbind(frame_coor_centro$east_centro,frame_coor_cen
 
 longlatcoor_centro<-spTransform(utmcoor_centro,CRS("+proj=longlat"))
 
-# volcamos al transformación en el frame de coordenadas del centro
+# volcamos laal transformación en el frame de coordenadas del centro
 
 frame_coor_centro$x <- coordinates(longlatcoor_centro)[,1]
 frame_coor_centro$y <- coordinates(longlatcoor_centro)[,2]
 
 frame_coor_centro <- frame_coor_centro[,-c(1,2)]
 
-#library(raster)
-
-#rasted_centro <- raster(frame_coor_centro)
-
-#lin <- rasterToContour(is.na(r))
-
-
 
 
 # El siguiente paso será generar un nube de coordenadas decimales para las posiciones de lso consumidores de la zona centro,
 # dentro de los límites de poligono de coordendas de esta zona
 
-lat.lims <- frame_coor_centro$y
-lon.lims <- frame_coor_centro$x
-
-
-# el número de coordendas será igual al número de consumidores de al zona Centro
-
 n <- sum(consumption_prediction_2016$Distrito == "Centro")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_centro
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
 
-# creamso dos columnas de lat y longitud en el data frame de predicciones àra signar los valores calculados
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
+
+
+# creamos dos columnas de lat y longitud en el data frame de predicciones pàra asignar los valores calculados
 
 consumption_prediction_2016$lat <- c(1:178598)
 
 consumption_prediction_2016$lon <- c(1:178598)
 
-consumption_prediction_2016$lat[1:6612] <- lat.sample
+consumption_prediction_2016$lat[1:6612] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[1:6612] <- lon.sample
+consumption_prediction_2016$lon[1:6612] <- coor_frame_random$x
 
 
-# bien, ahora hay que repetir el mismos código para cada distrito, que en un afase posterior reprogramaremos para que sea un función
+# bien, ahora hay que repetir el mismos código para cada distrito, que en una fase posterior reprogramaremos para que sea un función
 
 # más limpia para simplificar más la solución
 
@@ -451,8 +443,17 @@ consumption_prediction_2016$lon[1:6612] <- lon.sample
 
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_arganda <- c(439166.32, 438805.26, 438769.90, 440358.40, 441446.74, 441905.19, 442797.20, 441273.26, 440369.92, 439138.28, 439166.32)
-north_arganda <- c(4473930.85, 4473951.20, 4472474.37, 4471814.34, 4470508.23, 4470623.69, 4471801.15, 4473290.16, 4472896.81, 4473347.81, 4473930.85)
+east_arganda <- c(439166.39, 438627.58, 438783.88, 438716.04, 438756.43, 438828.22, 438961.65, 439261.78,
+                  439430.29, 439582.03, 440002.37, 440322.14, 440648.90, 440516.54, 441322.20, 441630.40,
+                  441905.10, 441770.56, 442118.92, 442306.71, 442828.89, 442692.58, 441918.68, 441998.82,
+                  441598.01, 441285.29, 441188.28, 440396.42, 439541.63, 439150.24, 439053.13, 439166.39)
+
+north_arganda <- c(4473939.56, 4473952.65, 4473472.58, 4473014.62, 4472607.98, 4472479.70, 4472406.06, 4472409.42,
+                   4472350.02, 4472377.81, 4472110.33, 4472017.80, 4471701.74, 4471546.05, 4470607.91, 4470515.51,
+                   4470612.08, 4471301.10, 4471507.39, 4471296.95, 4471754.47, 4472219.90, 4472742.45, 4472933.37,
+                   4473093.19, 4473339.40, 4473226.98, 4472931.42, 4473150.12, 4473385.44, 4473624.18,4473939.56)
+
+
 
 frame_coor_arganda<- data.frame(east_arganda,north_arganda)
 
@@ -465,36 +466,40 @@ frame_coor_arganda$y <- coordinates(longlatcoor_arganda)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_arganda$y
-lon.lims <- frame_coor_arganda$x
+frame_coor_arganda <- frame_coor_arganda[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Arganzuela")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_arganda
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
-
-lat.sample <- asin(h.sample) / 2 / pi * 360
-
-plot(lon.sample, lat.sample)
-
-# creamso dos columnas de lat y longitud en el data frame de predicciones àra signar los valores calculados
+coords <- as.matrix(df)
 
 
-consumption_prediction_2016$lat[6613:8169] <- lat.sample
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
 
-consumption_prediction_2016$lon[6613:8169] <- lon.sample
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
+
+
+# creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
+
+
+consumption_prediction_2016$lat[6613:8169] <- coor_frame_random$y
+
+consumption_prediction_2016$lon[6613:8169] <- coor_frame_random$x
 -------------------------------------------------------------
 # Retiro
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_retiro <- c(441268.37, 442510.49, 443970.64, 442964.58, 441254.84,441268.37)
+east_retiro <- c(441297.04, 441154.69, 441233.54, 442318.90, 443256.34, 444098.94, 444106.60, 443532.25,
+                 443272.97, 442855.21, 442732.75, 442542.04, 441924.46, 442013.41, 441589.32, 441297.04)
 
-north_retiro <- c(4474526.33, 4474690.78, 4474418.60, 4471971.13, 4473542.77, 4474526.33)
-  
+north_retiro <- c(4473350.92, 4474144.21, 4474541.11, 4474776.39, 4474717.01, 4474437.95, 4474292.82, 4473063.87,
+                  4472293.85, 4471765.88, 4472138.33, 4472345.85, 4472736.60, 4472936.16, 4473099.06, 4473350.92)
+
 frame_coor_retiro<- data.frame(east_retiro,north_retiro)
 
 utmcoor_retiro<-SpatialPoints(cbind(frame_coor_retiro$east_retiro,frame_coor_retiro$north_retiro), proj4string=CRS("+proj=utm +zone=30"))
@@ -506,27 +511,29 @@ frame_coor_retiro$y <- coordinates(longlatcoor_retiro)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_retiro$y
-lon.lims <- frame_coor_retiro$x
+frame_coor_retiro <- frame_coor_retiro[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Retiro")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_retiro
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
+
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[8170:8966] <- lat.sample
+consumption_prediction_2016$lat[8170:8966] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[8170:8966] <- lon.sample
+consumption_prediction_2016$lon[8170:8966] <- coor_frame_random$x
 
 -----------------------------------------------
   
@@ -534,9 +541,12 @@ consumption_prediction_2016$lon[8170:8966] <- lon.sample
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_salamanca <- c(441358.09, 444010.78, 443991.72, 442611.88, 441572.60, 441358.09)
+east_salamanca <- c(441237.56, 442310.41, 443265.72, 444099.60, 443962.11, 444075.65, 444077.46, 443997.53,
+                    442517.31, 441443.26, 441636.41, 441237.56)
 
-north_salamanca <- c(4474824.47, 4474722.95, 4477238.16, 4476520.56, 4476560.50, 4474824.47)
+north_salamanca <- c(4474533.10, 4474770.96, 4474726.74, 4474416.84, 4475862.09, 4476726.83, 4476968.83,
+                     4477293.48, 4476504.80, 4476607.47, 4476027.54, 4474533.10)
+
 
 frame_coor_salamanca<- data.frame(east_salamanca,north_salamanca)
 
@@ -549,27 +559,28 @@ frame_coor_salamanca$y <- coordinates(longlatcoor_salamanca)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_salamanca$y
-lon.lims <- frame_coor_salamanca$x
+frame_coor_salamanca <- frame_coor_salamanca[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Salamanca")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_salamanca
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[8967:10630] <- lat.sample
+consumption_prediction_2016$lat[8967:10630] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[8967:10630] <- lon.sample
+consumption_prediction_2016$lon[8967:10630] <- coor_frame_random$x
 
 --------------------------------------
   
@@ -578,10 +589,11 @@ consumption_prediction_2016$lon[8967:10630] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_chamartin <- c(441434.42, 443652.37, 443665.52, 442917.48, 441718.56, 441591.49, 441434.42)
+east_chamartin <- c(442525.70, 443977.09, 443365.39, 442793.25, 442852.20, 442721.39,441930.07,
+                    441570.34, 441359.67, 441451.36, 442525.70)
 
-north_chamartin <- c(4476764.63, 4476640.29, 4478774.76, 4480317.17, 4480346.71, 4479727.24, 4476764.63)
-
+north_chamartin <- c(4476525.25, 4477314.14, 4479734.28, 4480816.97, 4481529.86, 4481645.65,
+                     4481495.97, 4479698.88, 4476977.31, 4476591.00, 4476525.25)
 
 frame_coor_chamartin<- data.frame(east_chamartin,north_chamartin)
 
@@ -594,37 +606,40 @@ frame_coor_chamartin$y <- coordinates(longlatcoor_chamartin)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_chamartin$y
-lon.lims <- frame_coor_chamartin$x
+frame_coor_chamartin <- frame_coor_chamartin[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Chamartin")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_chamartin
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[10631:14156] <- lat.sample
+consumption_prediction_2016$lat[10631:14156] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[10631:14156] <- lon.sample
+consumption_prediction_2016$lon[10631:14156] <- coor_frame_random$x
 ----------------------------------------------------
   
 # Tetuan
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_tetuan <- c(441673.31, 439917.94, 439915.71, 441364.85, 441673.31)
+east_tetuan <- c(441371.92, 441558.53, 441687.13, 441136.61, 439876.86, 440062.12,
+                 439551.69, 439898.96, 441371.92) 
 
-north_tetuan <- c(4480515.21, 4480471.12, 4477655.49, 4477548.30, 4480515.21)
-
+                 
+north_tetuan <- c(4477489.94, 4479768.68, 4480423.72, 4480555.13, 4480011.62, 4479501.68, 
+                  4478484.66, 4477636.97, 4477489.94)
 
 frame_coor_tetuan<- data.frame(east_tetuan,north_tetuan)
 
@@ -637,37 +652,40 @@ frame_coor_tetuan$y <- coordinates(longlatcoor_tetuan)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_tetuan$y
-lon.lims <- frame_coor_tetuan$x
+frame_coor_tetuan <- frame_coor_tetuan[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Tetuan")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_tetuan
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[14157:30969] <- lat.sample
+consumption_prediction_2016$lat[14157:30969] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[14157:30969] <- lon.sample
+consumption_prediction_2016$lon[14157:30969] <- coor_frame_random$x
 ------------------------------
   
 # Chamberi
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_chamberi <- c(439140.31, 441608.03, 441482.83, 439053.51, 439140.31)
+east_chamberi <- c(441379.99, 439886.51, 439362.34, 439144.81, 438979.05, 438957.12, 439155.22,
+                   439095.82, 439254.07, 440981.40, 441440.14, 441632.52, 441346.90, 441379.99)
 
-north_chamberi <- c(4477542.84, 4477369.47, 4475505.28, 4475820.55, 4477542.84)
 
+north_chamberi <- c(4477469.37, 4477624.77, 4477473.13, 4477561.03, 4477431.12, 4477267.23, 4476814.40,
+                    4476092.89, 4475800.32, 4475482.92, 4475155.19, 4476056.29, 4476924.09, 4477469.37)
 
 frame_coor_chamberi<- data.frame(east_chamberi,north_chamberi)
 
@@ -680,39 +698,41 @@ frame_coor_chamberi$y <- coordinates(longlatcoor_chamberi)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_chamberi$y
-lon.lims <- frame_coor_chamberi$x
+frame_coor_chamberi<- frame_coor_chamberi[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Chamberi")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_chamberi
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
+
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[30970:59301] <- lat.sample
+consumption_prediction_2016$lat[30970:59301] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[30970:59301] <- lon.sample 
+consumption_prediction_2016$lon[30970:59301] <- coor_frame_random$x
 --------------------------------------------------------------------
 
 # Fuencarral
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_fuencarral <- c(442893.71, 442944.50, 444091.56, 444134.09, 441964.42, 438630.69, 436795.96, 436385.49, 436389.81, 438309.34,
-                   439357.25, 441712.57, 441870.59, 442109.56, 442893.71)
+east_fuencarral <- c(441742.43, 441922.00, 442878.58, 443041.54, 444174.04, 444108.80, 443506.89, 442196.85, 439547.26, 
+                     437663.82, 437311.78, 436313.36, 436308.40, 437363.11, 439594.67, 440324.14, 440644.09, 441742.43)
 
-north_fuencarral <- c(4481778.42, 4482714.25, 4483972.03, 4484991.67, 4485770.20, 4483565.70, 4481969.50, 4481265.68, 4480746.71,
-                    4480582.78, 4480240.81, 4480697.55, 4481557.31, 4481601.83, 4481778.42)
 
+north_fuencarral <- c(4480652.89, 4481516.53, 4481751.03, 4482614.70, 4483839.82, 4484467.30, 4484840.63, 4485657.84, 4484047.93,
+                      4482173.91, 4481414.36, 4481127.62, 4480545.47, 4480663.67, 4480239.41, 4480352.46, 4480731.22, 4480652.89)
 
 frame_coor_fuencarral<- data.frame(east_fuencarral,north_fuencarral)
 
@@ -725,27 +745,29 @@ frame_coor_fuencarral$y <- coordinates(longlatcoor_fuencarral)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_fuencarral$y
-lon.lims <- frame_coor_fuencarral$x
+frame_coor_fuencarral<- frame_coor_fuencarral[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Fuencarral")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_fuencarral
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
+
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[59302:77081] <- lat.sample
+consumption_prediction_2016$lat[59302:77081] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[59302:77081] <- lon.sample 
+consumption_prediction_2016$lon[59302:77081] <- coor_frame_random$x
 
 -------------------------------------------
   
@@ -753,10 +775,14 @@ consumption_prediction_2016$lon[59302:77081] <- lon.sample
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_moncloa <- c(438607.17, 434541.09, 434992.87, 439946.06, 439618.43, 438607.17)
+east_moncloa <- c(439506.78, 438254.43, 433877.42, 432192.56, 429149.16, 429064.59, 431270.58, 432567.87,
+                  433201.36, 434547.62, 437278.22, 437448.77, 437714.60, 438754.06, 439282.13, 439655.35,
+                  439055.10, 439029.63, 439919.51, 439539.47, 439937.19, 439506.78)
 
-north_moncloa <- c(4474306.82, 4474349.93, 4480419.51, 4479986.71, 4474365.34, 4474306.82)
 
+north_moncloa <- c(4480059.71, 4480438.96, 4480730.56, 4480122.41, 4481282.24, 4480610.64, 4479683.86, 4478831.38, 4477386.09,
+                   4477353.69, 4477408.26, 4476135.17, 4475414.99, 4474589.91, 4474688.20, 4474997.02, 4476150.65, 4477574.27,
+                   4477632.71, 4478501.16, 4479322.25, 4480059.71)
 
 frame_coor_moncloa<- data.frame(east_moncloa,north_moncloa)
 
@@ -769,27 +795,28 @@ frame_coor_moncloa$y <- coordinates(longlatcoor_moncloa)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_moncloa$y
-lon.lims <- frame_coor_moncloa$x
+frame_coor_moncloa<- frame_coor_moncloa[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Moncloa")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_moncloa
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[77082:79273] <- lat.sample
+consumption_prediction_2016$lat[77082:79273] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[77082:79273] <- lon.sample
+consumption_prediction_2016$lon[77082:79273] <- coor_frame_random$x
 
 ----------------------------------
   
@@ -798,9 +825,14 @@ consumption_prediction_2016$lon[77082:79273] <- lon.sample
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_latina <- c(437414.87, 432167.06, 432171.40, 437307.27, 437414.87)
+east_latina <- c(438681.55, 437092.54, 436271.88, 435521.59, 435097.37, 434075.67, 433616.23, 432286.40,
+                 431491.83, 433092.29, 433854.49, 434445.13, 435243.73, 435324.69, 435576.97, 436125.20,
+                 436772.09, 436935.88, 438639.87, 438681.55)
 
-north_latina <- c(4472102.44, 4472098.71, 4468385.46, 4468288.57, 4472102.44)
+
+north_latina <- c(4474286.85, 4473438.24, 4473346.67, 4472815.44, 4472359.40, 4472384.73, 4471686.86, 4469999.10,
+                  4468749.80, 4467922.22, 4468326.16, 4467976.01, 4468786.32, 4469569.92, 4470627.05, 4470634.68,
+                  4471101.32, 4471465.29, 4473220.22, 4474286.85)
 
 frame_coor_latina<- data.frame(east_latina,north_latina)
 
@@ -813,27 +845,28 @@ frame_coor_latina$y <- coordinates(longlatcoor_latina)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_latina$y
-lon.lims <- frame_coor_latina$x
+frame_coor_latina<- frame_coor_latina[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Latina")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_latina
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[79274:81492] <- lat.sample
+consumption_prediction_2016$lat[79274:81492] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[79274:81492] <- lon.sample
+consumption_prediction_2016$lon[79274:81492] <- coor_frame_random$x
 
 -------------------------------
   
@@ -841,11 +874,13 @@ consumption_prediction_2016$lon[79274:81492] <- lon.sample
   
 "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_carabanchel <- c(436213.58, 436337.47, 436943.17, 437051.52, 438638.71,438661.24, 440134.33, 439001.53,
-                      438834.21, 437446.31, 436213.58)
+east_carabanchel <- c(438789.82, 438584.66, 436973.31, 436792.73, 436187.19, 435626.39, 435320.21, 435309.44,
+                      434544.46, 435479.04, 437676.24, 438775.37, 439056.60, 439477.14, 439886.78, 440194.50,
+                      439197.36, 438789.82)
                       
-north_carabanchel <- c(4467890.13, 4470811.46, 4471447.87, 4473420.54, 4474244.54, 4472548.18, 4471851.32,
-                       4470681.93, 4469102.46, 4469231.12, 4467890.13)
+north_carabanchel <- c(4472410.45, 4473019.57, 4471506.03, 4471105.25, 4470654.68, 4469661.77, 4469528.90, 4468757.01,
+                       4468020.32, 4467864.38, 4468314.01, 4468617.08, 4470758.10, 4471288.38, 4471494.44, 4471840.89,
+                       4472361.99, 4472410.45)
 
 frame_coor_carabanchel<- data.frame(east_carabanchel,north_carabanchel)
 
@@ -858,27 +893,28 @@ frame_coor_carabanchel$y <- coordinates(longlatcoor_carabanchel)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_carabanchel$y
-lon.lims <- frame_coor_carabanchel$x
+frame_coor_carabanchel<- frame_coor_carabanchel[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Carabanchel")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_carabanchel
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[81493:83947] <- lat.sample
+consumption_prediction_2016$lat[81493:83947] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[81493:83947] <- lon.sample
+consumption_prediction_2016$lon[81493:83947] <- coor_frame_random$x
 
 -----------------------------------
   
@@ -886,9 +922,9 @@ consumption_prediction_2016$lon[81493:83947] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_usera <- c(439344.01, 441336.97, 441683.68, 438875.00, 439344.01)
-                
-north_usera <- c(4471047.46, 4471005.49, 4468369.47, 4468563.13, 4471047.46)
+east_usera <- c(440210.88, 439873.83, 439493.26, 439101.93, 438828.06, 440319.16, 441025.16, 442086.15, 441456.41, 440210.88)
+
+north_usera <- c(4471828.45, 4471420.65, 4471243.09, 4470757.73, 4468505.77, 4468341.83, 4468471.77, 4468126.77, 4470377.72, 4471828.45)
 
 frame_coor_usera<- data.frame(east_usera,north_usera)
 
@@ -901,27 +937,28 @@ frame_coor_usera$y <- coordinates(longlatcoor_usera)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_usera$y
-lon.lims <- frame_coor_usera$x
+frame_coor_usera<- frame_coor_usera[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Usera")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_usera
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[83948:86521] <- lat.sample
+consumption_prediction_2016$lat[83948:86521] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[83948:86521] <- lon.sample
+consumption_prediction_2016$lon[83948:86521] <- coor_frame_random$x
 
 
 --------------------------------------
@@ -930,9 +967,12 @@ consumption_prediction_2016$lon[83948:86521] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_puente_vallecas <- c(442881.19, 446226.80, 446256.20, 442776.36, 442881.19)
+east_puente_vallecas <- c(442859.62, 442276.29, 442689.92, 442307.39, 443043.86, 444377.81, 444568.45,
+                          447945.94, 448223.96, 445370.06, 444446.48, 443611.42, 442859.62)
 
-north_puente_vallecas <- c(4472499.98, 4472211.15, 4468991.59, 4469066.66, 4472499.98)
+
+north_puente_vallecas <- c(4471705.19, 4470872.23, 4470528.31, 4470091.95, 4468287.82, 4469156.60, 4469853.20,
+                           4470695.29, 4470968.41, 4471821.95, 4472863.05, 4473041.65, 4471705.19)
 
 frame_coor_puente_vallecas<- data.frame(east_puente_vallecas,north_puente_vallecas)
 
@@ -945,27 +985,28 @@ frame_coor_puente_vallecas$y <- coordinates(longlatcoor_puente_vallecas)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_puente_vallecas$y
-lon.lims <- frame_coor_puente_vallecas$x
+frame_coor_puente_vallecas<- frame_coor_puente_vallecas[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Puente_Vallecas")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_puente_vallecas
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[86522:94421] <- lat.sample
+consumption_prediction_2016$lat[86522:94421] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[86522:94421] <- lon.sample
+consumption_prediction_2016$lon[86522:94421] <- coor_frame_random$x
 
 
 --------------------------------------
@@ -974,9 +1015,9 @@ consumption_prediction_2016$lon[86522:94421] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_moratalaz<- c(443774.85, 447118.12, 446878.77, 443690.62, 443774.85)
+east_moratalaz<- c(444135.64, 443558.32, 444492.40, 445350.26, 446258.89, 446618.75, 447047.83, 446791.01, 446305.98, 444906.91, 444135.64)
 
-north_moratalaz <- c(4473947.11, 4473827.03, 4472113.63, 4472427.11, 4473947.11)
+north_moratalaz <- c(4474277.05, 4473103.61, 4472944.79, 4471932.92, 4471647.23, 4471837.59, 4473078.16, 4473465.75, 4473621.04, 4473844.58, 4474277.05)
 
 frame_coor_moratalaz<- data.frame(east_moratalaz,north_moratalaz)
 
@@ -989,27 +1030,28 @@ frame_coor_moratalaz$y <- coordinates(longlatcoor_moratalaz)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_moratalaz$y
-lon.lims <- frame_coor_moratalaz$x
+frame_coor_moratalaz<- frame_coor_moratalaz[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Moratalaz")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_moratalaz
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[94422:95571] <- lat.sample
+consumption_prediction_2016$lat[94422:95571] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[94422:95571] <- lon.sample
+consumption_prediction_2016$lon[94422:95571] <- coor_frame_random$x
 
 ------------------------
   
@@ -1017,10 +1059,16 @@ consumption_prediction_2016$lon[94422:95571] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_ciudad_lineal <- c(443886.59, 446521.16, 446722.10, 444122.60, 443886.59)
+east_ciudad_lineal <- c(444126.73, 444882.11, 445165.36, 446903.15, 446999.60, 447325.10, 445865.94, 446064.19,
+                        445727.13, 445112.18, 444343.36, 443856.93, 443531.36, 444008.91, 443499.59, 442948.16,
+                        442851.58, 442898.87, 443357.62, 443785.80, 443854.37, 444102.84, 444125.89, 444002.90, 
+                        444126.73)
 
-north_ciudad_lineal <- c(4477586.98, 4477530.00, 4474668.37, 4474875.88, 4477586.98)
 
+north_ciudad_lineal <- c(4474740.79, 4474394.63, 4475385.49, 4474174.88, 4473833.60, 4473839.52, 4476578.31, 4476658.92,
+                         4477313.56, 4477683.08, 4478947.82, 4479410.74, 4480999.96, 4481566.21, 4481697.12, 4481701.31,
+                         4480910.82, 4480635.77, 4479795.85, 4478710.04, 4477971.31, 4477058.89, 4476837.21, 4475808.46,
+                         4474740.79)
 
 frame_coor_ciudad_lineal<- data.frame(east_ciudad_lineal,north_ciudad_lineal)
 
@@ -1033,27 +1081,28 @@ frame_coor_ciudad_lineal$y <- coordinates(longlatcoor_ciudad_lineal)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_ciudad_lineal$y
-lon.lims <- frame_coor_ciudad_lineal$x
+frame_coor_ciudad_lineal<- frame_coor_ciudad_lineal[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Ciudad_Lineal")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_ciudad_lineal
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[95572:113461] <- lat.sample
+consumption_prediction_2016$lat[95572:113461] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[95572:113461] <- lon.sample 
+consumption_prediction_2016$lon[95572:113461] <- coor_frame_random$x
 
 ---------------
 
@@ -1062,10 +1111,13 @@ consumption_prediction_2016$lon[95572:113461] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_hortaleza<- c(445024.33, 443856.55, 443352.65, 444664.71, 446441.33, 446567.50, 445024.33)
+east_hortaleza<- c(444021.56, 443034.73, 443065.14, 444289.94, 444282.15, 444437.03, 444772.39, 445072.70, 445358.13, 446431.80,
+                   447288.71, 447630.92, 448377.09, 448886.95, 448938.50, 448743.74, 448075.66, 447723.60, 446916.41, 447155.15, 
+                   446721.81, 447230.47, 447873.20, 448726.74, 448782.33, 445129.70, 444409.38, 443906.51, 443575.98, 444021.56)
 
-north_hortaleza <- c(4477888.87,4477851.13, 4482821.28, 4484373.45, 4484270.68, 4477903.80, 4477888.87) 
-
+north_hortaleza <- c(4481607.11, 4481721.14, 4482471.06, 4483933.21, 4484543.87, 4484903.31, 4484638.57, 4484640.46, 4484294.15, 4484286.37,
+                     4484460.59, 4483982.82, 4483608.79, 4483564.31, 4482678.67, 4482479.16, 4482266.53, 4481350.75, 4480692.29, 4480112.49,
+                     4479951.56, 4479119.65, 4478602.54, 4478194.74, 4477894.97, 4477826.51, 4478967.84, 4479434.97, 4480913.53, 4481607.11)
 
 frame_coor_hortaleza<- data.frame(east_hortaleza,north_hortaleza)
 
@@ -1078,27 +1130,28 @@ frame_coor_hortaleza$y <- coordinates(longlatcoor_hortaleza)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_hortaleza$y
-lon.lims <- frame_coor_hortaleza$x
+frame_coor_hortaleza<- frame_coor_hortaleza[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Hortaleza")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_hortaleza
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[113462:139587] <- lat.sample
+consumption_prediction_2016$lat[113462:139587] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[113462:139587] <- lon.sample
+consumption_prediction_2016$lon[113462:139587] <- coor_frame_random$x
 
 
 ---------------------------
@@ -1108,10 +1161,13 @@ consumption_prediction_2016$lon[113462:139587] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_villaverde<- c(438876.24, 442485.47, 442411.99, 438821.64,438876.24)
-                    
+east_villaverde<- c(438876.72, 438507.61, 439412.85, 441288.78, 442048.60, 442438.40, 442865.91, 443686.99, 443534.51,
+                    442868.50, 442556.36, 442352.03, 442354.83, 442089.89, 441103.36, 440306.59, 438876.72)
 
-north_villaverde <- c(4468356.95, 4468003.21, 4464881.37, 4464871.96, 4468356.95)
+
+north_villaverde <- c(4468406.82, 4465115.57, 4464335.80, 4464218.20, 4464861.48, 4465133.76, 4465487.91, 4465535.13, 4466099.06,
+                      4466371.10, 4467075.87, 4467315.65, 4467681.16, 4468077.46, 4468454.73, 4468317.29, 4468406.82)
+
 
 frame_coor_villaverde<- data.frame(east_villaverde,north_villaverde)
 
@@ -1124,27 +1180,28 @@ frame_coor_villaverde$y <- coordinates(longlatcoor_villaverde)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_villaverde$y
-lon.lims <- frame_coor_villaverde$x
+frame_coor_villaverde<- frame_coor_villaverde[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Villaverde")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_villaverde
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[139588:161755] <- lat.sample
+consumption_prediction_2016$lat[139588:161755] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[139588:161755] <- lon.sample 
+consumption_prediction_2016$lon[139588:161755] <- coor_frame_random$x 
 
 --------------------------
   
@@ -1152,10 +1209,14 @@ consumption_prediction_2016$lon[139588:161755] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_vallecas<- c(444708.13, 450271.91, 450262.97, 444608.56, 444605.10, 444708.13)
+east_vallecas<- c(442666.36, 442787.07, 443213.71, 444920.91, 445605.43, 445904.75, 446756.83, 447861.05,
+                  448156.28, 449904.61, 451075.77, 448927.17, 449157.79, 448820.83, 447245.50, 446978.93,
+                  444740.32, 444483.95, 443484.75, 442666.36)
 
 
-north_vallecas <- c(4470348.96, 4470305.93, 4467710.89, 4468025.61, 4468115.98, 4470348.96)
+north_vallecas <- c(4467982.69, 4467591.61, 4467304.98, 4467891.90, 4467907.44, 4468250.25, 4468646.60, 4467965.37, 4468328.82,
+                    4467142.39, 4468432.43, 4469534.88, 4470112.22, 4470865.80, 4471307.74, 4470324.36, 4469683.60, 4469016.20,
+                    4468255.75, 4467982.69)
 
 frame_coor_vallecas<- data.frame(east_vallecas,north_vallecas)
 
@@ -1168,27 +1229,28 @@ frame_coor_vallecas$y <- coordinates(longlatcoor_vallecas)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_vallecas$y
-lon.lims <- frame_coor_vallecas$x
+frame_coor_vallecas<- frame_coor_vallecas[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Vallecas")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_vallecas
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[161756:168490] <- lat.sample
+consumption_prediction_2016$lat[161756:168490] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[161756:168490] <- lon.sample 
+consumption_prediction_2016$lon[161756:168490] <- coor_frame_random$x
 
 -----------------------
   
@@ -1196,10 +1258,12 @@ consumption_prediction_2016$lon[161756:168490] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_vicalvaro<- c(447290.09, 454135.64, 454144.12, 447158.05, 447290.09)
+east_vicalvaro<- c(446596.02, 447569.03, 448172.38, 448222.62, 450051.70, 450813.59, 451011.84, 451484.24, 453016.84,
+                   453761.56, 453935.50, 453028.89, 451410.91, 449654.64, 448747.01, 446596.02)
 
-north_vicalvaro <- c(4473548.40, 4473310.53, 4471328.09, 4471763.99, 4473548.40)
 
+north_vicalvaro <- c(4471538.10, 4473965.02, 4474239.85, 4473759.40, 4473135.53, 4474345.16, 4473794.00, 4473585.75, 4473596.51,
+                     4473444.15, 4471579.76, 4471573.07, 4472441.22, 4469833.79, 4470919.67, 4471538.10)
 frame_coor_vicalvaro<- data.frame(east_vicalvaro,north_vicalvaro)
 
 utmcoor_vicalvaro<-SpatialPoints(cbind(frame_coor_vicalvaro$east_vicalvaro, frame_coor_vicalvaro$north_vicalvaro), proj4string=CRS("+proj=utm +zone=30"))
@@ -1211,27 +1275,28 @@ frame_coor_vicalvaro$y <- coordinates(longlatcoor_vicalvaro)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_vicalvaro$y
-lon.lims <- frame_coor_vicalvaro$x
+frame_coor_vicalvaro<- frame_coor_vicalvaro[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "Vicalvaro")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_vicalvaro
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
+
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[168491:169489] <- lat.sample
+consumption_prediction_2016$lat[168491:169489] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[168491:169489] <- lon.sample  
+consumption_prediction_2016$lon[168491:169489] <- coor_frame_random$x
 
 --------------------------------
   
@@ -1240,9 +1305,12 @@ consumption_prediction_2016$lon[168491:169489] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_san_blas<- c(448912.57, 448816.36, 446231.04, 446459.55, 448912.57)
+east_san_blas<- c(448164.86, 447293.15, 445935.82, 446187.58, 445707.17, 445092.55, 445397.47, 445993.49, 446648.90,
+                  452758.69, 454531.53, 454579.90, 452702.94, 449764.43, 449061.47, 448164.86)
 
-north_san_blas <- c(4474768.35, 4477781.39, 4477695.23, 4474741.34, 4474768.35)
+
+north_san_blas <- c(4474342.49, 4473983.36, 4476561.40, 4476637.52, 4477399.84, 4477814.48, 4477845.06, 4477705.39, 4477807.33,
+                    4477737.58, 4477447.71, 4477275.15, 4476733.02, 4476990.06, 4474742.56, 4474342.49)
 
 frame_coor_san_blas<- data.frame(east_san_blas,north_san_blas)
 
@@ -1255,27 +1323,27 @@ frame_coor_san_blas$y <- coordinates(longlatcoor_san_blas)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_san_blas$y
-lon.lims <- frame_coor_san_blas$x
+frame_coor_san_blas<- frame_coor_san_blas[,-c(1,2)]
 
 n <- sum(consumption_prediction_2016$Distrito == "San_Blas")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_san_blas
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
+coords <- as.matrix(df)
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
 
-plot(lon.sample, lat.sample)
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
 
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[169490:172190] <- lat.sample
+consumption_prediction_2016$lat[169490:172189] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[169490:172190] <- lon.sample   
+consumption_prediction_2016$lon[169490:172189] <- coor_frame_random$x
 
 
 ------------------
@@ -1285,9 +1353,14 @@ consumption_prediction_2016$lon[169490:172190] <- lon.sample
   
   "https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?del=28&mun=92&refcat=28092A024000560000OK&final="
 
-east_barajas<- c(452866.91, 448980.32, 449010.69, 452830.96, 452866.91)
+east_barajas<- c(448852.35, 448785.05, 447439.26, 446841.17, 447204.37, 447089.59, 447930.11, 448037.35, 449210.43,
+                 449076.23, 449689.03, 451531.85, 453032.49, 452903.23, 453245.67, 454036.93, 454119.53, 452370.42,
+                 452092.36, 455001.53, 455245.56, 454841.83, 454597.05, 454503.38, 452611.09, 448852.35)
 
-north_barajas <- c(4483595.57, 4483520.91, 4477940.47, 4477891.37, 4483595.57)
+north_barajas <- c(4477898.59, 4478292.77, 4478954.15, 4479950.71, 4480087.54, 4480736.16, 4481455.90, 4482082.34, 4482730.11,
+                   4483567.11, 4483534.28, 4484747.38, 4484618.97, 4483689.56, 4483187.41, 4482727.57, 4482108.14, 4482069.88,
+                   4479132.06, 4478917.18, 4478419.51, 4478376.82, 4478066.62, 4477558.62, 4477836.95, 4477898.59)
+
 
 frame_coor_barajas<- data.frame(east_barajas,north_barajas)
 
@@ -1300,38 +1373,47 @@ frame_coor_barajas$y <- coordinates(longlatcoor_barajas)[,2]
 
 # el número de coordendas será igual al número de consumidores de Arganzuela
 
-lat.lims <- frame_coor_barajas$y
-lon.lims <- frame_coor_barajas$x
+frame_coor_barajas<- frame_coor_barajas[,-c(1,2)]
 
-n <- sum(consumption_prediction_2016$Distrito == "barajas")
+n <- sum(consumption_prediction_2016$Distrito == "Barajas")
 
-lon.sample <- runif(n, min = min(lon.lims), max = max(lon.lims))
+df <- frame_coor_barajas
+coords <- as.matrix(df)
 
-lat.lims.rads <- lat.lims / 360 * 2 * pi
-h.lims <- sin(lat.lims.rads)
-h.sample <- runif(n, min = min(h.lims), max = max(h.lims))
 
-lat.sample <- asin(h.sample) / 2 / pi * 360
+P1 = Polygon(coords)
+Ps1 = SpatialPolygons(list(Polygons(list(P1), ID = "a")), proj4string=CRS("+proj=utm +zone=30"))
+plot(Ps1, axes = TRUE)
 
-plot(lon.sample, lat.sample)
+
+coor_frame_random <- as.data.frame(spsample(Ps1,n,"random"))
 
 # creamos dos columnas de lat y longitud en el data frame de predicciones para asignar los valores calculados
 
 
-consumption_prediction_2016$lat[172190:178598] <- lat.sample
+consumption_prediction_2016$lat[172190:178598] <- coor_frame_random$y
 
-consumption_prediction_2016$lon[172190:178598] <- lon.sample  
+consumption_prediction_2016$lon[172190:178598] <- coor_frame_random$x
 
 ---------------------------------------
   
 # guardamos el dataset de predicciones con las coordendas calculadas
 
   
-write.csv(consumption_prediction_2016,file="consumption_pred_data_madrid_2016_by_coor.csv")
+write.csv(consumption_prediction_2016, file="consumption_pred_madrid_2016_by_coor.csv")
   
   
-# cargamos ahora el paquete de ggmap para visualizar que tal queda
+# cargamos ahora el paquete de ggmap para visualizar que tal queda, teneindo en cuenta al distribución
 
+p<- ggplot(consumption_pred_madrid_2016_by_coor, aes(consumption_pred_madrid_2016_by_coor$Tipo_consumidor,consumption_pred_madrid_2016_by_coor$`2016/01`)) 
+
+p2 <- ggplot(consumption_pred_madrid_2016_by_coor, aes(consumption_pred_madrid_2016_by_coor$Distrito,consumption_pred_madrid_2016_by_coor$`2016/01`)) 
+
+# podemos ver al distribución por distritos
+
+p + geom_boxplot(outlier.colour=NA, ylab = " Consumo en m3", xlab = "tipo de consumidor") +  coord_cartesian(ylim = c(0, 100))
+
+p2 + geom_boxplot(outlier.colour=NA,  ylab = " Consumo en m3",  xlab = "tipo de consumidor") +  coord_cartesian(ylim = c(0, 40))
   
 install.packages("ggmap")
 
@@ -1398,7 +1480,7 @@ class(water_dist_map)
 
 
 
-water_dist_map <- map_call_dist_madrid + geom_point(data=consumption_pred_data_madrid_2016_by_coor, aes(x=consumption_pred_data_madrid_2016_by_coor$lon, 
+water_dist_map <- map_call_dist_madrid + geom_point(data=consumption_pred_madrid_2016_by_coor, aes(x=consumption_pred_madrid_2016_by_coor$lon, 
                                   y=consumption_pred_data_madrid_2016_by_coor$lat, colour=consumption_pred_data_madrid_2016_by_coor$`2016/08`),
                                                  alpha = 0.3, show.legend = FALSE, size=0.1, color= "blue")
 library("sp")
@@ -1411,7 +1493,7 @@ water_dist_map_sp <- shapefile(water_dist_map)
 
 print(water_dist_map)
 
-#es una primera aproximación a la versión gráfica, exploremos un poco más con leaflet
+#es una primera aproximación a la versión gráfica, exploremos un poco más con leaflet para poder cagar uan distribución dinámica y exportable
 
 install.packages("leaflet")
 
@@ -1428,15 +1510,52 @@ leaflet(data = map_call_madrid) %>% addTiles() %>% addProviderTiles(providers$Op
   addPolygons(fill = FALSE, stroke = TRUE, color = "#03F") %>% addLegend("bottomright", colors = "#03F", labels = "Consumption Water Point") %>% 
   setView(-3.7, 40.41, zoom = 12)
                                                                          
-# creamos un leaflet con lso datos de matriz de consumos
+# creamos un leaflet con los datos de matriz de predicción de consumos
+
+consumption_pred_madrid_2016_by_coor$Anual_consumption <- rowSums(consumption_pred_madrid_2016_by_coor[, c(3:14)])
+
+write.csv(consumption_pred_madrid_2016_by_coor, file="consumption_pred_madrid_2016_by_coor.csv")
 
 
-mark_data <- data.frame(long= consumption_pred_data_madrid_2016_by_coor$lon, lat= consumption_pred_data_madrid_2016_by_coor$lat, val=consumption_pred_data_madrid_2016_by_coor$`2016/01`)
+# utilizamos un data frame auxiliar marker solo con los datos que nos interesa exportar, totalizado de consumo por tipo y coordenadas
+
+mark_data <- data.frame(long= consumption_pred_madrid_2016_by_coor$lon, lat= consumption_pred_madrid_2016_by_coor$lat, val=consumption_pred_madrid_2016_by_coor$Anual_consumption)
 
 str(mark_data)
 
+#finalmente podemos ver los consumidores
+
+install.packages("pals")
+
+library(pals)
+
+cluster_consumidores_madrid <- leaflet(data = mark_data) %>% addTiles() %>% addMarkers(clusterOptions = markerClusterOptions(~long, ~lat, popup = ~as.character(val)), label = ~as.character(paste(val,"m³",sep=" "), color="blue"))
+
+cluster_consumidores_madrid
+saveWidget(cluster_consumidores_madrid, file="Cluster consumidores Madrid.html")
+
+# podemos mejorar estas leyendas añadiendo gradientes de colores
+
+consumption_pred_madrid_2016_by_coor$Tipo_consumidor <- as.factor(consumption_pred_madrid_2016_by_coor$Tipo_consumidor)
+
+class(consumption_pred_madrid_2016_by_coor$Tipo_consumidor)
+
+#Creamos uan paleta de colores
+
+factpal <- topo.colors(7,alpha = 1)
+
+factpal
+
+pal <- colorFactor(factpal, domain = consumption_pred_madrid_2016_by_coor$Tipo_consumidor, levels = FALSE)
 
 
-leaflet(data = mark_data) %>% addTiles() %>% addMarkers(clusterOptions = markerClusterOptions(~long, ~lat, popup = ~as.character(val)), label = ~as.character(paste(val,"m³",sep=" "), color="blue"))
+cluster_consumidores_madrid_p2 <- leaflet(data = consumption_pred_madrid_2016_by_coor) %>% addTiles() %>% addCircleMarkers(lng = ~lon,lat =  ~lat, color= ~pal(consumption_pred_madrid_2016_by_coor$Tipo_consumidor), label= paste("Consumo: ", consumption_pred_madrid_2016_by_coor$Anual_consumption, "[m3] ", "_Tipo de consumidor: ", consumption_pred_madrid_2016_by_coor$Tipo_consumidor), clusterOptions = markerClusterOptions()) %>% 
+                                  addLegend("bottomright", colors = factpal, labels = unique(consumption_pred_madrid_2016_by_coor$Tipo_consumidor), title = "Tipo de consumidor" )
 
+cluster_consumidores_madrid_p2
 
+install.packages("htmlwidgets")
+
+library(htmlwidgets)
+
+saveWidget(cluster_consumidores_madrid_p2, file="Cluster consumidores Madrid.html", selfcontained = TRUE)
