@@ -40,15 +40,19 @@ En la fase de análisis se ha empleado diferentes modelos generalizados de regre
 
 **Resumen del resultado
 
-Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 80 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid. Los data set resultado están diponibles en esta cuenta github.
+Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 88 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid. Los data set resultado están diponibles en esta cuenta github.
 
 **Manual de usuario
 
-Se ha empleado leaflet como dashboard paquete de R para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para acceder y manipular tablas de datos de predicciones a través de controles de HMTL. El usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo.
+Se ha empleado leaflet como dashboard shinyapps.io, para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para acceder y manipular tablas de datos de predicciones a través de controles de HMTL. El usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo. Hay también un apartado dedicado a la generación de mapas estáticos, donde se ha empleado cartografía formato .shp de la Comunidad de Madrid.
 
-Se implementado también una shinyApp para analizar por distritos, tipo de consumidores y consumos anuales como datos de entrada las distribuciones de datos resultado de la aplicación de los modelos.
+Se implementado también una shinyApp para analizar por distritos, tipo de consumidores y consumos anuales como datos de entrada las distribuciones de datos resultado de la aplicación de los modelos, puede consultarse en la siguiente URL:
 
-Hay también un apartado dedicado a la generación de mapas estáticos, donde se ha empleado cartografía formato .shp de la Comunidad de Madrid.
+https://scwa2018.shinyapps.io/scwa_madrid/
+
+
+
+
 
 
 
