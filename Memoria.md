@@ -46,9 +46,11 @@ Como resultado final encontramos una matriz de predicciones completa para el añ
 
 Se ha empleado leaflet como dashboard shinyapps.io, para la construcción de cuadros de mando web interactivos. Permite, por ejemplo, crear interfaces para acceder y manipular tablas de datos de predicciones a través de controles de HMTL. El usuario puede visualizar los datos de la serie histórica y las predicciones a través de un mapa interactivo. Hay también un apartado dedicado a la generación de mapas estáticos, donde se ha empleado cartografía formato .shp de la Comunidad de Madrid.
 
-Se implementado también una shinyApp para analizar por distritos, tipo de consumidores y consumos anuales como datos de entrada las distribuciones de datos resultado de la aplicación de los modelos, puede consultarse en la siguiente URL:
+Se implementado también una shinyApp para analizar por distritos, tipo de consumidores y consumos anuales como datos de entrada las distribuciones de datos resultado de la aplicación de los modelos, así como un cluster de distribución, puede consultarse en la siguiente URL:
 
 https://scwa2018.shinyapps.io/scwa_madrid/
+
+https://scwa2018.shinyapps.io/scwa_madrid_cluster/
 
 
 
