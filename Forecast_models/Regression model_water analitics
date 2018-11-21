@@ -91,13 +91,13 @@ plot(des_s1_stl)
 
   ###PRUEBA DE MODELOS###
 
-#pasamso a desarrollar la regresion lineal de la varaible Como primer argumento de lm se coloca la fórmula variable dependiente ~ variable independiente. 
+#pasamos a desarrollar la regresion lineal de la varaible Como primer argumento de lm se coloca la fórmula variable dependiente ~ variable independiente. 
 #Como segundo argumento se indica el conjunto de datos que se usará para construir el modelo. vamos a hacer varia aproximaciones y comparar modelso para
 #estimar cual es l amejor a proxomación con lo desarrollado arriba.
 
 
 
-# pRIMERO ensayamos un modelo lineal con algunas de las varaibles,  agrupando con la estimación de la varaible dependiente `2015/01` como
+# Primero ensayamos un modelo lineal con algunas de las varaibles,  agrupando con la estimación de la varaible dependiente `2015/01` como
 
 # un resultado de las varaibles independientes de los meses de enero de años anteriores
 
@@ -129,6 +129,8 @@ head(Madrid_compsuption_profile$`2015/12`)
 anova(modeloLogit,modeloGlobal)
 
 -----------------
+  
+  
 # en este punto merece la pena rescatar los modelos ARIMA de las serires temporales.Existe una amplia literatura sobre la aplicación de modelos ARIMA en series temporales. R 
 # ya que cuenta con numerosos procedimientos para la estimación, validación y predicción con estos modelos, especialmente diseñados para las serires
 # temporales
@@ -170,7 +172,7 @@ fit_proba_s1
 
 tsdisplay(residuals(fit_proba_s1), lag.max=45, main='(1,1,1) Model Residuals')
 
-#vamos a hacer un comparación entre las dos estrategisas para elegir modelo de ARIMA
+#vamos a hacer un comparación de metricas entre las dos estrategias para elegir modelo de ARIMA
 
 
 
@@ -204,7 +206,7 @@ Madrid_consumption_train$prediccion=predict(model_glm_mtrain)
 
 Predauxiliar= prediction(Madrid_consumption_train$prediccion, Madrid_consumption_train$`2015/12`)
 auc.tmp = performance(Predauxiliar, "auc");
-aucModeloLogittrain = as.numeric(auc.tmp@`2015/12`.values)
+aucModeloLogittrain = as.numeric(auc.tmp@`2015/12`,.values)
 aucModeloLogittrain
 
 # como hemos conprobado, al ser un modelo de para series temorales, no podemo smos testear el modelo de regresion econ el metodo
@@ -220,24 +222,75 @@ aucModeloLogittrain
 #Si el modelo no se especifica correctamente, eso generalmente se reflejará en los residuos en forma de tendencias, asimetría o cualquier otro patrón no capturado por el modelo.
 # Idealmente, los residuos deben verse como ruido blanco, lo que significa que normalmente se distribuyen. Se puede usar una función de conveniencia tsdisplay () para trazar estos diagnósticos del modelo.
 #Los gráficos de Residuals muestran un rango de error más pequeño, más o menos centrado alrededor de 0. Podemos observar que el AIC también es más pequeño para la estructura (1, 1, 36):
+--------------------------
 
-ajuste_s1=arima((ts(series[,1], frequency = 12, start=c(2009,01))),order=c(1,1,36))
+#trabajamos en dstintas versiones del modelo ariam par encontrar la que más se ajuste a la serie 
+  
+train_series_ar=series[,1][1:72]
+test_series_ar=series[,1][73:84] 
+
+
+ajuste_s1=(auto.arima((ts(series[,1][1:72], frequency = 12, start=c(2009,01))), seasonal=TRUE))
 ajuste_s1
 
-tsdisplay(residuals(ajuste_s1), lag.max=45, main='(1,1,36) Model Residuals')
 
-tsdiag(ajuste_s1)
+# realizamos el teste y el train para la primera serie de usuario número 01
+
+## construimos modelos arima diferentes
+arimaModel_1=arima(train_series_ar, order=c(0,1,2))
+arimaModel_2=arima(train_series_ar, order=c(1,1,0))
+arimaModel_3=arima(train_series_ar, order=c(1,1,2))
+
+## look at the parameters
+
+print(arimaModel_1);print(arimaModel_2);print(arimaModel_3)
+
+
+forecast1=predict(arimaModel_1, 12)
+forecast2=predict(arimaModel_2, 12)
+forecast3=predict(arimaModel_3, 12)
+
+
+plot(forecast(fit_proba_s1), xlab="year", ylab= "m3", main ="forecast for consumer 01 with ARIMA(2,1,2)(1,0,0)[12]")
+
+
+# comprobamos las predicciones con respecto al test
+
+
+install.packages("DMwR")
+
+library(DMwR)
+
+accmeasures1=regr.eval(test_series_ar, forecast1$pred)
+accmeasures2=regr.eval(test_series_ar, forecast2$pred)
+accmeasures3=regr.eval(test_series_ar, forecast3$pred)
+
+
+#vemos las métricas
+
+accMeasure=rbind(accmeasures1,accmeasures2,accmeasures1)
+print(accMeasure)
 
 
 ---------------------------------
 
-# podemos hacer predicciones de este modelo a traves de forecast() y predict() para el año 2016
+# podemos hacer predicciones de este modelo ajustado a traves de forecast() y predict() para el año 2016 para el ajuste de auto.arima
+
+tsdisplay(residuals(ajuste_s1), lag.max=45, main='(ARIMA(2,1,2)(1,0,0)[12]')
+
+tsdiag(ajuste_s1)
+
+smoothScatter(ajuste_s1$residuals)
+hist(ajuste_s1$residuals)
+qqnorm(ajuste_s1$residuals); qqline(ajuste_s1$residuals,col=2)
+confint(ajuste_s1,level=0.95)
 
 
 library(forecast)
 
-forecast_cons1<- forecast(fit_proba_s1, h=12)# dar robusted  por los potenciales outliers del modelo
+forecast_cons1<- forecast(ajuste_s1, h=12)# dar robusted  por los potenciales outliers del modelo
 
+forecast_cons1$
 
 #estudiamos las prodiedades de la predicción
 
@@ -246,18 +299,58 @@ forecast_cons1$model
 forecast_cons1$mean
 forecast_cons1$lower
 forecast_cons1$upper
+forecast_cons1$residuals
 
-# el modelo elegido por la maquina e el "ARIMA(2,1,2)(1,0,0)[12]"
 
-plot(forecast(fit_proba_s1), xlab="year", ylab= "m3", main ="forecast for consumer 01 ARIMA (1,1,36)")
+prediction_cons01 <- predict(ajuste_s1, 12)
+
+accmeasures1=regr.eval(series[,1][73:84] , forecast_cons1$mean)
+
+accmeasures1
+
+years_col <- c(" 2015/01", "2015/02", "2015/03", "2015/04", "2015/05", "2015/06", 
+               "2015/07", "2015/08", "2015/09", "2015/10", "2015/11", "2015/12")
+
+df_compare_acc <- data.frame(years_col, forecast_cons1$mean, test_series_ar)
+
+df_compare_acc$years_col <- as.character(df_compare_acc$years_col)
+
+df_compare_acc$forecast_cons1.mean <- as.numeric(df_compare_acc$forecast_cons1.mean)
+
+colnames(df_compare_acc) <- c("year", "forcast", "test")
+str(df_compare_acc)
+
+# si los ponemos de forma gráfica
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+dfplot <- df_compare_acc %>% gather(key, value, -year)
+
+dfplot$key <- as.factor(dfplot$key)
+str(dfplot)
+
+
+ggplot(dfplot, aes(x = dfplot$year, y = dfplot$value, color = dfplot$key) ) + geom_point()
+
+# el modelo elegido para aplicar será el "ARIMA(2,1,2)(1,0,0)[12]", basadonos en l aestrategia testada aquí y en experiencias de resolion previas
+# con series temporales, donde las metrica apuntas menores errores resduales por tanto se espera un notable precisión:
+
+"https://rstudio-pubs-static.s3.amazonaws.com/345790_3c1459661736433382863ed19c30ea55.html"
+
+
+  
+  
+plot(forecast(ajuste_s1), xlab="year", ylab= "m3", main ="forecast for consumer 01 with ARIMA(2,1,2)(1,0,0)[12]")
+
 
 # se puede observar en la curva de forecast que las predicciones de ARIMA son menos precisas a medida que avanza la serie a predecir
 # en los meses relativos a 2016 y 2017, lo que implica que debemos mejorar el modelo en el siguiente paso, pero que es un buena primera aproximación para asignar 
 
 # las variables dependientes. como vemos la serie tiene estacionalidad, aunque la tendencia el claramente a la baja. 
 
-
-# tambien podemos aproximar la sere con la herramienta predict ()
+# tambien podemos aproximar la serie con la herramienta predict ()
 
 prediction_cons01 <- predict(ajuste_s1,n.ahead=12)
 
@@ -297,7 +390,10 @@ pred_matrix_2016_01 <- as.data.frame(pred_matrix_2016)
 
 colnames(pred_matrix_2016_01)<-c("2016/01","2016/02","2016/03","2016/04","2016/05","2016/06","2016/07", "2016/08","2016/09","2016/10","2016/11","2016/12")
 
+# creamos un matriz  por cada chunk de cálculo que luego juntaremos mediante un join/merge
+
 pred_matrix_2016_01 <- pred_matrix_2016_01%>%mutate_at(.vars = vars(`2016/01`:`2016/12`),.funs = funs(round(.,digits=2)))
+
 
 write.csv(pred_matrix_2016_01,file="pred_matrix_2016_01.csv")
 
@@ -814,7 +910,7 @@ porcent_diff_captation_vs_consuption
 
 "https://www.canaldeisabelsegunda.es/es/galeria_ficheros/Home/TARIFAS2018_web.pdf"
 
-# podemos asimilar un cosnte medio de aducción y distribición de 1,1712 €/m3
+# podemos asimilar un cosnte medio de aducción y distribición de 1,1712 ???/m3
 
 
 prev_ahorro_red_distribución_2016 <- porcent_diff_captation_vs_consuption*1.1742
@@ -844,4 +940,5 @@ prev_ahorro_red_distribución_2016
 
 # programaas de adquisición de datos como los proyectados en iwesla, pueden facilitar al aplicación de modelso como el aquí enunciado
 
-# para futuras tecnicas de prediccion como clustering en tiempo real, ahorrarían milllones de euros al contribuyente mejorando las condiciones de suministro.
+# para futuras técnicas de predicción como clustering en tiempo real, ahorrarían millones de euros al contribuyente mejorando las condiciones de suministro.
+
