@@ -1,0 +1,238 @@
+head(dist_flow_clean_03)
+
+summary(dist_flow_clean_03)
+
+# el siguiente paso será calcular los pesos anuales por distrito para poder aplicarlos a un distrito tipo de Madrid y analizar los consumos con el patron heredado
+# y limpio
+
+sum(dist_flow_clean_03$`2009/01`)
+
+#vamos a crear un serie de sumatorios para entender mejor la magnitud del problema (total de consumo en m3) para poder tomar una decsión de como se acerca este data 
+#frame a los cosumos totales de la ciudad de Madrid. Para ser riguroso solo haremos las comprobaciones de consumos totalizados, se entiende en el ennunciado de este TFM que ante la imposibilidad
+#de conseguir datos  de fuentes privadas. para mantener l anaturaleza pública y útil de este trabajo, se aproximará el problema al tratameinto de datos sobre la distribución de caudales trabajadada en el capítulo anterior.
+
+# Escojeremos un totalizado del año 2009-2015
+
+Total_2009<-colSums (select (dist_flow_clean_03, contains ("2009")))
+Total_2010<-colSums (select (dist_flow_clean_03, contains ("2010")))
+Total_2011<-colSums (select (dist_flow_clean_03, contains ("2011")))
+Total_2012<-colSums (select (dist_flow_clean_03, contains ("2012")))
+Total_2013<-colSums (select (dist_flow_clean_03, contains ("2013")))
+Total_2014<-colSums (select (dist_flow_clean_03, contains ("2014")))
+Total_2015<-colSums (select (dist_flow_clean_03, contains ("2015")))
+
+#Vemos los totalizados para cada año, por mes y la suma del año
+
+Total_2009
+
+sum(Total_2009,1:12)
+
+Total_2010
+
+sum(Total_2010,1:12)
+
+
+Total_2011
+
+sum(Total_2011,1:12)
+
+Total_2012
+
+sum(Total_2012,1:12)
+
+Total_2013
+
+sum(Total_2013,1:12)
+
+Total_2014
+
+sum(Total_2014,1:12)
+
+Total_2015
+
+sum(Total_2015,1:12)
+
+#Creamos un pequeño data Frame con los totalizados para poder comparar
+
+Total_dist_flow <-c(sum(Total_2009,1:12),sum(Total_2010,1:12),sum(Total_2011,1:12),sum(Total_2012,1:12),sum(Total_2013,1:12),sum(Total_2014,1:12),sum(Total_2015,1:12))
+Total_dist_flow
+
+#vamos a coger directamente los datos desde la data frame que ofrece le ayuntamiento de Madrid del periodo 2009-2015
+
+"http://www-2.munimadrid.es/CSE6/control/seleccionDatos?numSerie=14030200022"
+
+
+Total_flow_Madrid<-c(164771895,153998581,155245386,150112767,145629081,144120536,146500848)
+Total_flow_Madrid
+Total_dist_flow
+
+#creamos un vector con los años para poder plotear
+
+Years<-c("2009","2010","2011","2012","2013","2014","2015")
+
+comp_frame<-data.frame(Years,Total_dist_flow,Total_flow_Madrid)
+
+#comparamos graficamente lso datos para ver las disparidades
+
+class(comp_frame)
+
+#cargamos algunas librerías para poder empezar a graficar los resultados parciales
+
+library(ggplot2)
+
+library(tidyverse)
+
+
+if(!require("ggplot2")){
+  install.packages("ggplot2")
+  library("ggplot2")
+}
+
+if (!require("gap")){
+  install.packages("gap")
+  library(gap)
+}
+
+#vemos como están repartidos los datos
+
+qplot(dist_flow_clean_03$`Tipo Consumidor`, dist_flow_clean_03$`2009/01`,data=dist_flow_clean_03,geom="boxplot")
+
+#vamos a emplear un herramienta de ggplot para poder mejorar la visualización
+
+p<- ggplot(dist_flow_clean_03, aes(dist_flow_clean_03$`Tipo Consumidor`,dist_flow_clean_03$`2009/01`))
+
+
+p+geom_boxplot(outlier.colour = "red", outlier.shape = 2,outlier.alpha = 0.01)+geom_jitter(width = 0.1) + scale_y_log10()
+
+
+#estudiemos un poco más a fondo la tabla comparativa resumen del large daset (modelo de patrones de consumo) 
+  
+pt<-ggplot(comp_frame)
+
+ggplot(Years, aes(x = Total_dist_flow, y = Total_dist_flow)) + geom_point()
+
+
+ggplot(comp_frame, aes(x = Years, y = Total_flow_Madrid)) + geom_point() #aes(colour = Total_dist_flow#), size = 13)
+
+#si observamos los datos con la herramienta ggplot
+
+
+ggplot(comp_frame, aes(x = Years, y = Total_flow_Madrid, y2=Total_flow_Madrid)) + geom_point()
+
+summary(comp_frame)
+
+#como podemos ver en el gráfico de abajo, tenemos una relación dispar entre los datos del data frame de prueba y la Ciudad de Madrid
+
+plot(comp_frame$Years,comp_frame$Total_dist_flow, main="Compsuption chart",xlab="Year",ylab="m3/year")
+lines(comp_frame$Years,comp_frame$Total_flow_Madrid, col="red",lwd=3)
+lines(comp_frame$Years,comp_frame$Total_dist_flow, col="blue",lwd=3)
+legend("bottomleft",col=c("blue","red"),legend =c("Proof city","Madrid"), lwd=3, bty = "n")
+
+
+#el siguiente paso será absorver el patrón de la daset de prueba y aplicarla a la ciudad de madrid
+#para ello la idea es sacar los pesos de consumo de cada uno de los tipos de consumidores (col01) para cada año de la serie histórica
+# y luego asignarle un valor para que el sumatorio total sea la del año tipo de al ciudad e Madrid
+
+write.csv(comp_frame,file="comp_frame_chart_madrid_proof.csv")
+
+# vamos a sacar el factor de paso entre los consumos de la dataset armonizada y los los consumos totales de Madrid, es decir, vamos a escalarla
+
+comp_frame$scale_coef<-comp_frame$Total_flow_Madrid/comp_frame$Total_dist_flow
+
+summary(comp_frame)
+
+# Una vez obtenidos los coeficientes de paso, escalamos el problema para adaptarlo al consumo real, basado en un patrón de consumos del la dataset 
+# filtrada, con el que podamos hacer ciencia, con algunas matrices de paso para poder escalar adecuadamente los números
+
+scale_ds_aux<-dist_flow_clean_03[,-c(1)]
+
+consumer_vector<- (dist_flow_clean_03$`Tipo Consumidor`)
+
+consumer_vector
+
+
+#escalamos la matriz auxiliar con la varibles de los consumos por mese en el periodo de 2009-2015, 84 variables
+
+library(dplyr)
+
+head(scale_ds_aux)
+
+#vamos a hacerlo por periodos por meses por el factor de escala de cada año desde el 2009-2015, que tenemos guardado en el vector de escala
+
+scale_vector<-c(comp_frame$scale_coef)
+
+# escalamos para el año 2009
+
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2009/01`:`2009/12`),.funs = funs(round(. * (scale_vector[1]),digits=2)))
+
+# escalamos para el año 2010
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2010/01`:`2010/12`),.funs = funs(round(. * (scale_vector[2]),digits=2)))
+
+# escalamos para el año 2011
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2011/01`:`2011/12`),.funs = funs(round(. * (scale_vector[3]),digits=2)))
+
+
+# escalamos para el año 2012
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2012/01`:`2012/12`),.funs = funs(round(. * (scale_vector[4]),digits=2)))
+
+
+# escalamos para el año 2013
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2013/01`:`2013/12`),.funs = funs(round(. * (scale_vector[5]),digits=2)))
+
+
+# escalamos para el año 2014
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2014/01`:`2014/12`),.funs = funs(round(. * (scale_vector[6]),digits=2)))
+
+
+# escalamos para el año 2015
+scale_ds_aux <- scale_ds_aux%>%mutate_at(.vars = vars(`2015/01`:`2015/12`),.funs = funs(round(. * (scale_vector[7]),digits=2)))
+
+#volvemos a introducir el vector de consumidores en la dataset
+
+scaled_ds_mad <- scale_ds_aux
+
+scaled_ds_mad<-cbind(consumer_vector,scaled_ds_mad)
+
+
+#por fin obtenemos una base de datos desde poder empezara regularizar y hacer predicciones, basada en totalizados reales de Madrid y mezclada con los patrones
+# de consumo por categorias de una ciudad similar
+
+write.csv(scaled_ds_mad,file="Madrid_compsuption_profile.csv")
+
+#si estudiamos un poco los sumatoriaos del dataset generados para ver los errores de redondeo
+
+sum_ds_mad <- c(sum(colSums(select(scaled_ds_mad, contains ("2009")))[1:12]),
+                sum(colSums(select(scaled_ds_mad, contains ("2010")))[1:12]),
+                sum(colSums(select(scaled_ds_mad, contains ("2011")))[1:12]),
+                sum(colSums(select(scaled_ds_mad, contains ("2012")))[1:12]),
+                sum(colSums(select(scaled_ds_mad, contains ("2013")))[1:12]),
+                sum(colSums(select(scaled_ds_mad, contains ("2014")))[1:12]),
+                sum(colSums(select(scaled_ds_mad, contains ("2015")))[1:12]))
+
+comp_frame$sum_ds_mad <- sum_ds_mad
+
+# si calculamos el error relativo
+
+comp_frame$e_relat<-abs((comp_frame$sum_ds_mad-comp_frame$Total_flow_Madrid)/comp_frame$Total_flow_Madrid)
+
+comp_frame$e_abs<- abs(comp_frame$sum_ds_mad-comp_frame$Total_flow_Madrid)
+
+comp_frame$e_percent <- comp_frame %>% mutate_at(.vars = vars(e_relat),.funs = funs(. * 100))
+
+plot(comp_frame$Years,comp_frame$Total_dist_flow, main="Consumption chart",xlab="Year",ylab="m3/year")
+lines(comp_frame$Years,comp_frame$Total_flow_Madrid, col="red",lwd=3)
+lines(comp_frame$Years,comp_frame$Total_dist_flow, col="blue",lwd=3)
+lines(comp_frame$Years,comp_frame$sum_ds_mad, col="green",lwd=3)
+legend("bottomleft",col=c("blue","red","green"),legend =c("Proof city","Madrid","large data Scaled"), lwd=3, bty = "n")
+
+
+write.csv(comp_frame,file="Brief_datacomp_Madrid.csv")
+
+
+# como se puede ver este error relativo está por debajo del accurancy de los caudalímetros más destacados instalados actualemente
+# en las lecturas a consumidores, con un 0,0003725 % de desviación. Esto no significa que no absorbamos errores en nuestra aproximación
+# pero podemos estar en unos ordenes de magnitud tolerables para la segunda fase del analisis (modelo predictivo)
+
+"https://w3.siemens.com/mcms/sensor-systems/en/process-instrumentation/flow-measurement/electromagnetic/sensors/Pages/sitrans-f-m-mag-5100-w-for-water-applications.aspx"
+
+         
