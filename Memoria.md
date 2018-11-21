@@ -40,7 +40,11 @@ En la fase de análisis se ha empleado diferentes modelos generalizados de regre
 
 **Resumen del resultado
 
-Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 88 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid. Los data set resultado están diponibles en esta cuenta github.
+Como resultado final encontramos una matriz de predicciones completa para el año 2016, que podemos testear con valores reales totalizados de la serie. La precisión de la predicción se ha calculado en torno a 88.36 %. Hay derivadas interesantes que apuntan los datos, como estimaciones a la baja en torno 10-5 %, que pueden indicar dos patrones, o bien una restricción en la información de la naturaleza de los puntos calientes de la ciudad ( hospitales, instalaciones militares, edificios oficiales, etc) o incluso una huella de fraude de consumidores en la desviación real del consumo al alza que puede ser un spin off interesante de abordar de este proyecto, que sigue vivo, con los registros oficiales y privados de la gestora del agua en Madrid.
+
+Los modelos empleados, aún teniendo margen de mejora, indican una tendencia a la baja en el consumo que puede impactar de forma favorable en la definición de proyectos y modelos de explotación aguas arriba (ETAP, Redes de distribición) y abajo (EDAR, reciclaje de agua) de la ecuación de ciclo integral de agua en las ciudades. Potencial de ahorro y utilización de recursos.
+
+Los data set resultado están diponibles en esta cuenta github y aplicaciones desarrolladas para este proyecto.
 
 **Manual de usuario
 
