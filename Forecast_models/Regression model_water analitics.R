@@ -1,14 +1,14 @@
-# En este capitulo del trabajo , estudiaremo un modelo de regresiÛn generalizada
+# En este capitulo del trabajo, estudiaremoa un modelo de regresi√≥n generalizada
 
 library(readr)
 
-#por favor, el siguinete dataset, hay que cargarlso desde al carpeta que estÈ alojado en su servidor
+#por favor, el siguiente dataset hay que cargarlo desde la carpeta en que est√© alojado en su servidor
 
 Madrid_compsuption_profile <- read_csv("C:/Users/jmuro/Desktop/tfm/step_03_data clean first analisis/Madrid_compsuption_profile.csv", 
                                        col_types = cols(X1 = col_skip()))
 View(Madrid_compsuption_profile)
 
-#cargamos las librerias que necesitamos apara comenzar a plantear un modelo
+#cargamos las librerias que necesitamos para comenzar a plantear un modelo
 
 if(!require("plyr")){
   install.packages("plyr")
@@ -40,7 +40,7 @@ qplot(Madrid_compsuption_profile$consumer_vector,Madrid_compsuption_profile$`200
 
 ----------------------------------------------------------------
 
-###CONSTRUCCI”N DE LA MATRIZ DE SERIE TEMPORAL###
+###CONSTRUCCI√ìN DE LA MATRIZ DE SERIE TEMPORAL###
 
 # vamos a considerar como series temporales cada fila de consumidor que tenemos asignada 
 
@@ -66,7 +66,7 @@ plot( series[,3])
 plot( series[,4])
  
 
-# podemos estudiar un poco m·s estacionalidad y tendencias de las series
+# podemos estudiar un poco m√°s estacionalidad y tendencias de las series
 
 des_s1 <- decompose(ts(series[,1], frequency = 12, start=c(2009,01)))
 des_s2 <- decompose(ts(series[,2], frequency = 12, start=c(2009,01)))
@@ -80,7 +80,7 @@ plot(des_s2)
 plot(des_s3)
 plot(des_s4)
 
-# podemos utilizar tambien el comando stl para comprender al periocidad de la serie
+# podemos utilizar tambien el comando stl para comprender la periocidad de la serie
 
 des_s1_stl=stl((ts(series[,1], frequency = 12, start=c(2009,01))), s.window="periodic")
 str(des_s1_stl)
@@ -91,15 +91,15 @@ plot(des_s1_stl)
 
   ###PRUEBA DE MODELOS###
 
-#pasamos a desarrollar la regresion lineal de la varaible Como primer argumento de lm se coloca la fÛrmula variable dependiente ~ variable independiente. 
-#Como segundo argumento se indica el conjunto de datos que se usar· para construir el modelo. vamos a hacer varia aproximaciones y comparar modelso para
-#estimar cual es l amejor a proxomaciÛn con lo desarrollado arriba.
+#Pasamos a desarrollar la regresion lineal de la variable. Como primer argumento de lm se coloca la f√≥rmula variable dependiente ~ variable independiente. 
+#Como segundo argumento se indica el conjunto de datos que se usar√° para construir el modelo. Vamos a hacer varias aproximaciones y comparar modelos para
+#estimar cual es la mejor aproximaci√≥n con lo desarrollado arriba.
 
 
 
-# Primero ensayamos un modelo lineal con algunas de las varaibles,  agrupando con la estimaciÛn de la varaible dependiente `2015/01` como
+# Primero ensayamos un modelo lineal con algunas de las varaibles,  agrupando con la estimaci√≥n de la varaible dependiente `2015/01` como
 
-# un resultado de las varaibles independientes de los meses de enero de aÒos anteriores
+# un resultado de las variables independientes de los meses de enero de a√±os anteriores
 
 ggplot(Madrid_compsuption_profile, aes(x = `2009/01`, y = `2015/01`)) + geom_point() + 
   geom_smooth(method = "lm", se=TRUE, color="red", formula = y ~ x)+scale_x_log10() +scale_y_log10() 
@@ -116,7 +116,7 @@ Madrid_compsuption_profile$consumer_vector=as.factor(Madrid_compsuption_profile$
 
 --------------
 
-#probamos ahora con otro modelo de regresiÛn logÌstica genralizada, suponiendo como variable dependiente el ultimo mes de la serie
+#probamos ahora con otro modelo de regresi√≥n log√≠stica generalizada, suponiendo como variable dependiente el √∫ltimo mes de la serie
 
 modeloGlobal=glm(Madrid_compsuption_profile$`2015/12` ~ ., data = Madrid_compsuption_profile)
 summary(modeloGlobal)
@@ -131,15 +131,15 @@ anova(modeloLogit,modeloGlobal)
 -----------------
   
   
-# en este punto merece la pena rescatar los modelos ARIMA de las serires temporales.Existe una amplia literatura sobre la aplicaciÛn de modelos ARIMA en series temporales. R 
-# ya que cuenta con numerosos procedimientos para la estimaciÛn, validaciÛn y predicciÛn con estos modelos, especialmente diseÒados para las serires
+# En este punto merece la pena rescatar los modelos ARIMA de las series temporales. Existe una amplia literatura sobre la aplicaci√≥n de modelos ARIMA en series temporales. R 
+# ya que cuenta con numerosos procedimientos para la estimaci√≥n, validaci√≥n y predicci√≥n con estos modelos, especialmente dise√±ados para las series
 # temporales
   
 # El uso adecuado de algunas funciones que ya hemos visto (acf(), pacf() y diff()) permite al usuario identificar posibles modelos candidatos para representar una serie temporal estacionaria.
 
-#Estos modelos pueden estimarse f·cilmente en R mediante la funciÛn arima().
+#Estos modelos pueden estimarse f√°cilmente en R mediante la funci√≥n arima().
 
-#Por ˙ltimo, seÒalemos que la funciÛn arima.sim() permite simular una serie temporal de acuerdo con el modelo ARIMA especificado por el usuario.
+#Por √∫ltimo, se√±alemos que la funci√≥n arima.sim() permite simular una serie temporal de acuerdo con el modelo ARIMA especificado por el usuario.
 
 # podemos ver la tendencia de muestras aleatorias de la serie de observaciones
 
@@ -154,15 +154,15 @@ plot(diff(ts(series[,150000], frequency = 12, start=c(2009,01))))
 
 
 
-# podemos estimar el modelo a partir de los datos con la herramienta arima, a y ajustar lso coeficientes con el estudio de los lag y residuos
+# podemos estimar el modelo a partir de los datos con la herramienta arima, a y ajustar los coeficientes con el estudio de los lag y residuos
 
 
 ajuste_s1=arima((ts(series[,1], frequency = 12, start=c(2009,01))),order=c(1,1,1))
 ajuste_s1
 
-#La funciÛn tsdiag() muestra que no queda estructura de autocorrelaciÛn en los residuos del ajuste_s1, tambien prbaremos con la funciÛn de auto.arima
+#La funci√≥n tsdiag() muestra que no queda estructura de autocorrelaci√≥n en los residuos del ajuste_s1, tambien probaremos con la funci√≥n de auto.arima
 
-#creamso ahora un ajuste con auto.arima (lm), recojiendo la estacionalidad que se deriba del estudio de diff del perfil del consumidor
+#creamos ahora un ajuste con auto.arima (lm), recogiendo la estacionalidad que se deriva del estudio de diff del perfil del consumidor
 
 library(forecast)
 
@@ -172,7 +172,7 @@ fit_proba_s1
 
 tsdisplay(residuals(fit_proba_s1), lag.max=45, main='(1,1,1) Model Residuals')
 
-#vamos a hacer un comparaciÛn de metricas entre las dos estrategias para elegir modelo de ARIMA
+#vamos a hacer un comparaci√≥n de m√©tricas entre las dos estrategias para elegir modelo de ARIMA
 
 
 
@@ -188,8 +188,8 @@ confint(fit_proba_s1,level=0.95)
   ### TRAIN & TEST####
 
 
-#crememos unos grupos de test y entrenamiento para testar lo modelos aplicados, sobre la varaible dependiente 2015/12, mediante el estudio
-#de modelos de regresiÛn logÌstica que se encuentran integrados dentro del propio paquete de auto.arima
+#creeemos unos grupos de test y entrenamiento para testar lo modelos aplicados, sobre la variable dependiente 2015/12, mediante el estudio
+#de modelos de regresi√≥n log√≠stica que se encuentran integrados dentro del propio paquete de auto.arima
 
 
 set.seed(1234) 
@@ -209,22 +209,22 @@ auc.tmp = performance(Predauxiliar, "auc");
 aucModeloLogittrain = as.numeric(auc.tmp@`2015/12`,.values)
 aucModeloLogittrain
 
-# como hemos conprobado, al ser un modelo de para series temorales, no podemo smos testear el modelo de regresion econ el metodo
-#arriba descrito al no tratarse de objetos predictivos de clase binaria. pasamo a desarrollar el modelo predictivo para cada serie  asumeinto del 
+# como hemos comprobado, al ser un modelo de para series temorales, no podemos testear el modelo de regresi√≥n con el m√©todo
+#arriba descrito al no tratarse de objetos predictivos de clase binaria. Pasamos a desarrollar el modelo predictivo para cada serie asumeinto del 
 #paque ARIMA.
 
 ------------------------
   
   ###ELECCION DEL MODELO AUTO.ARIMA####
 
-#Hay un patrÛn claro presente en ACF / PACF y las parcelas de residuales de modelo que se repiten en el retraso 4. Esto sugiere que nuestro modelo podrÌa estar mejor con una especificaciÛn diferente, como p = 7 o q = 7.
-# Podemos repetir el proceso de ajuste que permite el componente MA (36) y examinar las gr·ficas de diagnÛstico nuevamente. Esta vez, no hay autocorrelaciones significativas presentes.
-#Si el modelo no se especifica correctamente, eso generalmente se reflejar· en los residuos en forma de tendencias, asimetrÌa o cualquier otro patrÛn no capturado por el modelo.
-# Idealmente, los residuos deben verse como ruido blanco, lo que significa que normalmente se distribuyen. Se puede usar una funciÛn de conveniencia tsdisplay () para trazar estos diagnÛsticos del modelo.
-#Los gr·ficos de Residuals muestran un rango de error m·s pequeÒo, m·s o menos centrado alrededor de 0. Podemos observar que el AIC tambiÈn es m·s pequeÒo para la estructura (1, 1, 36):
+#Hay un patr√≥n claro presente en ACF / PACF y las parcelas de residuales de modelo que se repiten en el retraso 4. Esto sugiere que nuestro modelo podr√≠a estar mejor con una especificaci√≥n diferente, como p = 7 o q = 7.
+#Podemos repetir el proceso de ajuste que permite el componente MA (36) y examinar las gr√°ficas de diagn√≥stico nuevamente. Esta vez, no hay autocorrelaciones significativas presentes.
+#Si el modelo no se especifica correctamente, eso generalmente se reflejar√° en los residuos en forma de tendencias, asimetr√≠a o cualquier otro patr√≥n no capturado por el modelo.
+#Idealmente, los residuos deben verse como ruido blanco, lo que significa que normalmente se distribuyen. Se puede usar una funci√≥n de conveniencia tsdisplay () para trazar estos diagn√≥sticos del modelo.
+#Los gr√°ficos de Residuals muestran un rango de error m√°s peque√±o, m√°s o menos centrado alrededor de 0. Podemos observar que el AIC tambi√©n es m√°s peque√±o para la estructura (1, 1, 36):
 --------------------------
 
-#trabajamos en dstintas versiones del modelo ariam par encontrar la que m·s se ajuste a la serie 
+#trabajamos en distintas versiones del modelo arima para encontrar la que m√°s se ajuste a la serie 
   
 train_series_ar=series[,1][1:72]
 test_series_ar=series[,1][73:84] 
@@ -234,7 +234,7 @@ ajuste_s1=(auto.arima((ts(series[,1][1:72], frequency = 12, start=c(2009,01))), 
 ajuste_s1
 
 
-# realizamos el teste y el train para la primera serie de usuario n˙mero 01
+# realizamos el test y el train para la primera serie de usuario n√∫mero 01
 
 ## construimos modelos arima diferentes
 arimaModel_1=arima(train_series_ar, order=c(0,1,2))
@@ -266,7 +266,7 @@ accmeasures2=regr.eval(test_series_ar, forecast2$pred)
 accmeasures3=regr.eval(test_series_ar, forecast3$pred)
 
 
-#vemos las mÈtricas
+#vemos las m√©tricas
 
 accMeasure=rbind(accmeasures1,accmeasures2,accmeasures1)
 print(accMeasure)
@@ -274,7 +274,7 @@ print(accMeasure)
 
 ---------------------------------
 
-# podemos hacer predicciones de este modelo ajustado a traves de forecast() y predict() para el aÒo 2016 para el ajuste de auto.arima
+# podemos hacer predicciones de este modelo ajustado a traves de forecast() y predict() para el a√±o 2016 para el ajuste de auto.arima
 
 tsdisplay(residuals(ajuste_s1), lag.max=45, main='(ARIMA(2,1,2)(1,0,0)[12]')
 
@@ -292,7 +292,7 @@ forecast_cons1<- forecast(ajuste_s1, h=12)# dar robusted  por los potenciales ou
 
 forecast_cons1$
 
-#estudiamos las prodiedades de la predicciÛn
+#estudiamos las propiedades de la predicci√≥n
 
 forecast_cons1$method
 forecast_cons1$model
@@ -320,7 +320,7 @@ df_compare_acc$forecast_cons1.mean <- as.numeric(df_compare_acc$forecast_cons1.m
 colnames(df_compare_acc) <- c("year", "forcast", "test")
 str(df_compare_acc)
 
-# si los ponemos de forma gr·fica
+# si los ponemos de forma gr√°fica
 
 library(ggplot2)
 library(dplyr)
@@ -334,8 +334,8 @@ str(dfplot)
 
 ggplot(dfplot, aes(x = dfplot$year, y = dfplot$value, color = dfplot$key) ) + geom_point() + geom_smooth(method = lm, se = FALSE)
 
-# el modelo elegido para aplicar ser· el "ARIMA(2,1,2)(1,0,0)[12]", basadonos en l aestrategia testada aquÌ y en experiencias de resolion previas
-# con series temporales, donde las metrica apuntas menores errores resduales por tanto se espera un notable precisiÛn:
+# el modelo elegido para aplicar ser√° el "ARIMA(2,1,2)(1,0,0)[12]", bas√°ndonos en la estrategia testada aqu√≠ y en experiencias de resolion previas
+# con series temporales, donde las metricas apuntan menores errores residuales, por tanto se espera un notable precisi√≥n:
 
 "https://rstudio-pubs-static.s3.amazonaws.com/345790_3c1459661736433382863ed19c30ea55.html"
 
@@ -346,7 +346,7 @@ plot(forecast(ajuste_s1), xlab="year", ylab= "m3", main ="forecast for consumer 
 
 
 # se puede observar en la curva de forecast que las predicciones de ARIMA son menos precisas a medida que avanza la serie a predecir
-# en los meses relativos a 2016 y 2017, lo que implica que debemos mejorar el modelo en el siguiente paso, pero que es un buena primera aproximaciÛn para asignar 
+# en los meses relativos a 2016 y 2017, lo que implica que debemos mejorar el modelo en el siguiente paso, pero que es un buena primera aproximaci√≥n para asignar 
 
 # las variables dependientes. como vemos la serie tiene estacionalidad, aunque la tendencia el claramente a la baja. 
 
@@ -357,11 +357,11 @@ prediction_cons01 <- predict(ajuste_s1,n.ahead=12)
 prediction_cons01$pred #predicciones con predict()
 prediction_cons01$se  #errores en al prediccion con predict
 
-# como se puede ver , el porcentaje de error medio de forecast, con el valor que aceptariamos como una predicciÛn plausible, es un serietemporal.
+# como se puede ver , el porcentaje de error medio de forecast, con el valor que aceptar√≠amos como una predicci√≥n plausible, es un serietemporal.
 
-# venimos trabajando algunas lineas el data frame como serie temporal para poder aprovechar las herramientas como ARIME, donde encajamos un modelo de predicciÛn 
-#forecast y predic, la idea a partir de aquÌ es converir de nuevo en vector la media de la predicciÛn y encajar dentro de un nuevo dataframe 
-#que ser· el data set de predicciones en 2016
+# venimos trabajando algunas lineas el data frame como serie temporal para poder aprovechar las herramientas como ARIME, donde encajamos un modelo de predicci√≥n 
+#forecast y predic, la idea a partir de aqu√≠ es converir de nuevo en vector la media de la predicci√≥n y encajar dentro de un nuevo dataframe 
+#que ser√° el data set de predicciones en 2016
 
 class(forecast_cons1$mean)
 
@@ -370,13 +370,13 @@ final_pred_s01 <- c(as.numeric(forecast_cons1$mean))
 class(final_pred_s01)
 
 
-# vamos a aplicar el modelo predictivo ARIMA para todas las series de consumidores, y generar las varibles dependientes
-#de lo que ser· la matriz de predicciones, 
+#vamos a aplicar el modelo predictivo ARIMA para todas las series de consumidores, y generar las varibles dependientes
+#de lo que ser√° la matriz de predicciones, 
 #que posteriormente convertiremos a un data frame y utilizaremos como test para el accurancy final
 
-# el loop que se desarrolla a continuaciÛn, requiere de bastante potencia de computaciÛn, ya que en una sola linea traduce la serie temporal
-# genera el modelo m·s ajustado con auto.arima, precide el vector de tiempo del 2016 y luego convierte en vector y lo asigna  a la matriz
-# de consumos futuros, antes de que la traduzcamos a data frame. Por eso, la primera aproximaciÛn es partir el c·lculo en dieciocho(18) matrices, y luego hacer un joint o un merge
+#el loop que se desarrolla a continuaci√≥n requiere de bastante potencia de computaci√≥n, ya que en una sola linea traduce la serie temporal,
+#genera el modelo m√°s ajustado con auto.arima, precide el vector de tiempo del 2016 y luego convierte en vector y lo asigna a la matriz
+#de consumos futuros, antes de que la traduzcamos a data frame. Por eso, la primera aproximaci√≥n es partir el c√°lculo en dieciocho(18) matrices, y luego hacer un joint o un merge
 
 
 pred_matrix_2016 <- matrix(NA,nrow=10000,ncol=12)
@@ -390,7 +390,7 @@ pred_matrix_2016_01 <- as.data.frame(pred_matrix_2016)
 
 colnames(pred_matrix_2016_01)<-c("2016/01","2016/02","2016/03","2016/04","2016/05","2016/06","2016/07", "2016/08","2016/09","2016/10","2016/11","2016/12")
 
-# creamos un matriz  por cada chunk de c·lculo que luego juntaremos mediante un join/merge
+#creamos un matriz por cada chunk de c√°lculo que luego juntaremos mediante un join/merge
 
 pred_matrix_2016_01 <- pred_matrix_2016_01%>%mutate_at(.vars = vars(`2016/01`:`2016/12`),.funs = funs(round(.,digits=2)))
 
@@ -398,10 +398,10 @@ pred_matrix_2016_01 <- pred_matrix_2016_01%>%mutate_at(.vars = vars(`2016/01`:`2
 write.csv(pred_matrix_2016_01,file="pred_matrix_2016_01.csv")
 
 
-#vemos que tal ha quedado el calculo del forecasting de consumos de los 10.000 primeros consumidores
+#vemos qu√© tal ha quedado el c√°lculo del forecasting de consumos de los 10.000 primeros consumidores
 
 
-# continuamos con la produccion con los siguientes productos de datos aplicando el modelo a lso [10001-20000]
+#continuamos con la produccion con los siguientes productos de datos aplicando el modelo a los consumidores [10001-20000]
 
 pred_matrix_2016_02 <- matrix(NA,nrow=20000,ncol=12)
 
@@ -420,7 +420,7 @@ pred_matrix_2016_02 <- pred_matrix_2016_02%>%mutate_at(.vars = vars(`2016/01`:`2
 write.csv(pred_matrix_2016_02,file="pred_matrix_2016_02.csv")
 
 
-# continuamos con la produccion con los siguientes productos de datos aplicando el modelo a lso [20001-30000]
+# continuamos con la produccion con los siguientes productos de datos aplicando el modelo a los consumidores [20001-30000]
 
 
 pred_matrix_2016_03 <- matrix(NA,nrow=30000,ncol=12)
@@ -720,7 +720,7 @@ pred_matrix_2016_17 <- pred_matrix_2016_17%>%mutate_at(.vars = vars(`2016/01`:`2
 write.csv(pred_matrix_2016_17,file="pred_matrix_2016_17.csv")
 
 
-# continuamos con la produccion con los siguientes productos de datos aplicando el modelo a los ˙ltimos consumidores de la serie [170001-178598]
+# continuamos con la produccion con los siguientes productos de datos aplicando el modelo a los √∫ltimos consumidores de la serie [170001-178598]
 
 
 pred_matrix_2016_18 <- matrix(NA,nrow=178598,ncol=12)
@@ -742,9 +742,9 @@ write.csv(pred_matrix_2016_18, file = "pred_matrix_2016_18.csv")
 
 
 
-# juntamos ahora todos los resultados parciales en un unicco dataframe como base de predicciones para el aÒo 2016
-# cabe estudiar una forma m·s elegante de hacerlo, pero tras varias pruebas y por mantener limpieza en el joint, 
-#calculo una comumna de indices y luego inserto y agrupo por esos indices de consumidor
+# juntamos ahora todos los resultados parciales en un √∫nico dataframe como base de predicciones para el a√±o 2016
+# cabe estudiar una forma m√°s elegante de hacerlo, pero tras varias pruebas y por mantener limpieza en el joint, 
+#calculo una columna de √≠ndices y luego inserto y agrupo por esos √≠ndices de consumidor
 
 
 
@@ -831,9 +831,9 @@ join_full_pred_matrix <- bind_rows(pred_matrix_2016_01_id_final, pred_matrix_201
                               ) %>%  group_by(id) 
   
   
-# Durante el an·lisis se detecta que por el modelo logÌstico elegido, las tendencias de algunos consumos bajos se han 
-# predicho hacia valores negativos. Es sin duda un sÌntoma de que el algoritmo de juste ha de ser depurado, pero como medida 
-# en este punto vamos a poner en positivo todos estos valores adem·s de aÒadir el vecor de perfiles de consumidor
+# Durante el an√°lisis se detecta que por el modelo log√≠stico elegido, las tendencias de algunos consumos bajos se han 
+# predicho hacia valores negativos. Es sin duda un s√≠ntoma de que el algoritmo de juste ha de ser depurado, pero como medida 
+# en este punto vamos a poner en positivo todos estos valores adem√°s de a√±adir el vector de perfiles de consumidor
 
 consumption_prediction_2016 <- join_full_pred_matrix[,-c(1)]
 
@@ -853,15 +853,15 @@ Total_2016<-colSums (select (consumption_prediction_2016, contains ("2016")))
 
 sum(Total_2016,1:12)
 
-#Vemos que el consumo total se cifra en 131.172.767 m3/aÒo sin tener en cuenta las perdidas en al red, que podemos estimar entre
+#Vemos que el consumo total se cifra en 131.172.767 m3/a√±o sin tener en cuenta las p√©rdidas en la red, que podemos estimar entre
 
-#un 15 -20 %, el coste por metro cubico medio en el aÒo 2016 fue de 1,82 ???/m3
+#un 15 -20 %, el coste por metro c√∫bico medio en el a√±o 2016 fue de 1,82 ???/m3
 
 
 "http://www-2.munimadrid.es/CSE6/control/seleccionDatos?numSerie=14030200040"
 
 
-#la cifra de cconsumo de agua en cidad de Madrid en el aÒo 2016 fue de 148.439.675 m3 por tanto un accurancy bruto del modelo predictivo
+#la cifra de consumo de agua en la ciudad de Madrid en el a√±o 2016 fue de 148.439.675 m3 por tanto un accurancy bruto del modelo predictivo
 
 
 accurancy_pred_vs_real = (sum(Total_2016,1:12)/148439675)
@@ -869,18 +869,18 @@ accurancy_pred_vs_real = (sum(Total_2016,1:12)/148439675)
 accurancy_pred_vs_real
 
 
-# para poder ser m·s fiel al patron de consumo real de la ciudad, hemos de ser capaces de acceder a lso datos por consumidores
+# para poder ser m√°s fiel al patr√≥n de consumo real de la ciudad, hemos de ser capaces de acceder a los datos por consumidores
 
-# esto implica que la preciÛn del algoritmo desarrollado pude aumentar o disminuir dea cuerdo a varios parametros, tales como el fraude, 
+# esto implica que la preci√≥n del algoritmo desarrollado puede aumentar o disminuir de acuerdo a varios par√°metros, tales como el fraude, 
 
-# que aportaria un incremento en el consumo de agua sin qu este fuera detectado por las predicciones, siendo un un spin off del TFM que nos ocupa.
+# que aportaria un incremento en el consumo de agua sin que este fuera detectado por las predicciones, siendo un spin off del TFM que nos ocupa.
 
 
-# un 88.36 % del consumo real a la baja. Pongamos como hipotesis las pÈrdidas medias registradas en la red ese aÒo (15,06 %)
+# un 88.36 % del consumo real a la baja. Pongamos como hip√≥tesis las p√©rdidas medias registradas en la red ese a√±o (15,06 %)
 
-# y devido a la desviaciÛn con el consumo real, demos adem·s un margen del 20 % para reserva, el consumo final previsto seg˙n
+# y debido a la desviaci√≥n con el consumo real, demos adem√°s un margen del 20 % para reserva, el consumo final previsto seg√∫n
 
-# el modelo desarrollado serÌa de:
+# el modelo desarrollado ser√≠a de:
 
 
 pred_mayorada <- sum(Total_2016,1:12)*1.1506*1.2
@@ -889,55 +889,55 @@ pred_mayorada
 
 #
 
-# esto supone un total de consumo mayorado de 181.112.863 m3 para la ciudad de Madrid. Teniendo en cuenta la disposiciÛn desde embalses y captaciones
-# para ese aÒo 
+# esto supone un total de consumo mayorado de 181.112.863 m3 para la ciudad de Madrid. Teniendo en cuenta la disposici√≥n desde embalses y captaciones
+# para ese a√±o 
 
 "http://www-2.munimadrid.es/CSE6/control/mostrarDatos"
 
-# hablamos de 491.000.000 m3 que se pusieron a disposiciÛn el red de distribuciÛn, depÛsitos, y agua que tubo que tratarse para su disposiciÛn
+# hablamos de 491.000.000 m3 que se pusieron a disposici√≥n el red de distribuci√≥n, dep√≥sitos, y agua que tuvo que tratarse para su disposici√≥n
 
-# sin tener en cuenta la carga de la red de 4.000 km de la ciudad de MAdrid, aunque tubieramso un volumen de respaldo del dble de este consumo previsto y mayorado
+# sin tener en cuenta la carga de la red de 4.000 km de la ciudad de MAdrid, aunque tuvi√©ramos un volumen de respaldo del doble de este consumo previsto y mayorado
 
-# por reservas para al red de distrubuciÛn y el resto de poblaciones perifÈricas a MAdrid, siendo conservadores
+# por reservas para la red de distribuci√≥n y el resto de poblaciones perif√©ricas a MAdrid, siendo conservadores
 
 porcent_diff_captation_vs_consuption <- 491000000- 2.5*pred_mayorada
 
 porcent_diff_captation_vs_consuption
 
-# esto supone   38.21 Hm3 que se est·n captando, potabilizando, bombeando y almacenando en la red y depÛsitos que hay que mantener
+# esto supone 38.21 Hm3 que se est√°n captando, potabilizando, bombeando y almacenando en la red y dep√≥sitos que hay que mantener
 
 # teniendo el cuenta precio medio del m3, esto supone:
 
 "https://www.canaldeisabelsegunda.es/es/galeria_ficheros/Home/TARIFAS2018_web.pdf"
 
-# podemos asimilar un cosnte medio de aducciÛn y distribiciÛn de 1,1712 ???/m3
+# podemos asimilar un coste medio de aducci√≥n y distribici√≥n de 1,1712 ???/m3
 
 
-prev_ahorro_red_distribuciÛn_2016 <- porcent_diff_captation_vs_consuption*1.1742
+prev_ahorro_red_distribuci√≥n_2016 <- porcent_diff_captation_vs_consuption*1.1742
 
-prev_ahorro_red_distribuciÛn_2016
-
-
-# estamos hablando de casi 45 Millones de euros!!!, que la empresa de gestion del agua puede ahorrar y emplear en un pequeÒa parte de ese ahorro
-
-# en fortalecer su departamento de analisis inteligente de las redes de distribuciÛn para la ciudad de Madrid y datascience
+prev_ahorro_red_distribuci√≥n_2016
 
 
-# en el aÒo 2017 el CYII realizÛ una serie de mejoras en la red que bajaraonsustancialmente las pÈrdidas seg˙n su s publicaciones hasta dicras de 
+# estamos hablando de casi 45 Millones de euros!!!, que la empresa de gestion del agua puede ahorrar y emplear en un peque√±a parte de ese ahorro
 
-#3.4 % de la red, cifra a˙n por contrastar cuando los resultados del aÒo 2017 estÈn disonibles.
+# en fortalecer su departamento de an√°lisis inteligente de las redes de distribuci√≥n para la ciudad de Madrid y datascience
+
+
+# en el a√±o 2017 el CYII realiz√≥ una serie de mejoras en la red que bajaron sustancialmente las p√©rdidas seg√∫n sus publicaciones hasta cifras de 
+
+#3.4 % de la red, cifra a√∫n por contrastar cuando los resultados del a√±o 2017 est√©n disponibles.
 
 
 
-# la conclusiÛn es que este TFM se abre como un primera aproximaciÛn al problema de gestiÛn de agua en las ciudades. aplicar ciencia de datos junto 
+# La conclusi√≥n es que este TFM se abre como un primera aproximaci√≥n al problema de gesti√≥n de agua en las ciudades. Aplicar ciencia de datos 
 
-# junto con el potencial que arroja las inicia tevas como el proyecto iWESLA
+# junto con el potencial que arroja las iniciativas como el proyecto iWESLA
 
 "https://www.esmartcity.es/2017/02/09/gestion-inteligente-agua-madrid-proyecto-europeo-iwesla"
 
 "http://iwesla.iot4water.com/"
 
 
-# programaas de adquisiciÛn de datos como los proyectados en iwesla, pueden facilitar al aplicaciÛn de modelso como el aquÌ enunciado
+# programas de adquisici√≥n de datos como los proyectados en iwesla, pueden facilitar la aplicaci√≥n de modelos como el aqu√≠ enunciado
 
-# para futuras tecnicas de prediccion como clustering en tiempo real, ahorrarÌan milllones de euros al contribuyente mejorando las condiciones de suministro.
+# para futuras tecnicas de prediccion como clustering en tiempo real, ahorrar√≠an milllones de euros al contribuyente mejorando las condiciones de suministro.
